@@ -19,7 +19,84 @@ src/
 ```
 
 ## Prerequisites
-.NET 8 SDK · Node.js 20+ · Microsoft SQL Server (local default instance `.`; LocalDB or Express also work — change `Server=` in appsettings.json) · (later) Python 3.10+
+
+For a **Windows development PC**, install:
+
+| Tool | Required for | Check in PowerShell |
+|---|---|---|
+| **.NET 8 SDK** (not just the runtime) | Backend and EF migrations; projects target `net8.0` | `dotnet --list-sdks` must include an `8.0.xxx` SDK |
+| **Node.js 20+ with npm** | Frontend installation, build and dev server | `node --version` and `npm --version` |
+| **Microsoft SQL Server Database Engine** | Required application database; default instance, Express or LocalDB | Connect to the installed instance with Windows authentication |
+| SQL Server Management Studio (optional) | Inspect databases, run the SQL checks below, backup/restore | Open and connect to the same instance |
+| Git (if cloning) | Get/update the source | `git --version` |
+| Python **3.11 or 3.12** (optional) | Standalone ML service/tests; not needed for frontend/backend/manual review | `py --list` |
+
+An editor is optional for running the commands. Visual Studio users should install ASP.NET/web development support.
+SQL Server Management Studio by itself does **not** install the database engine. PostgreSQL, MySQL and SQLite are not supported here.
+Close and reopen PowerShell after installing tools so PATH is refreshed.
+
+## First time on a new PC — read this before Run
+
+### 1. Get the complete source
+
+Clone the repository URL provided by the owner, or extract the source archive into a local folder.
+Do not guess the Git remote URL. Example workspace: `C:\Projects\CodingCompetition`.
+The commands below assume this structure exists:
+
+- `AGENTS.md` and `docs/` at the workspace root.
+- `src/backend/AerialWatch.sln` and the projects it references.
+- `src/frontend/package.json` **and** `src/frontend/package-lock.json`.
+- `src/backend/AerialWatch.Infrastructure/Persistence/Migrations/` including the snapshot.
+
+Do not copy another PC's `node_modules`, `bin`, `obj` or Python `.venv`; install/restore dependencies locally.
+A fresh setup starts with an empty survey list. The source does not include an existing database, uploaded photos, datasets or trained model weights.
+
+### 2. Choose the SQL Server instance and local paths
+
+Open **PowerShell terminal A** in your workspace. Replace the example workspace path with your actual folder:
+
+```powershell
+Set-Location 'C:\Projects\CodingCompetition'
+
+# Pick ONE installed database engine instance. This is the repository default:
+$env:ConnectionStrings__AerialWatch = 'Server=.;Database=AerialWatch;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True'
+
+# If you installed SQL Server Express instead, use this line INSTEAD:
+# $env:ConnectionStrings__AerialWatch = 'Server=.\SQLEXPRESS;Database=AerialWatch;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True'
+
+# If you installed SQL Server Express LocalDB instead, use this line INSTEAD:
+# $env:ConnectionStrings__AerialWatch = 'Server=(localdb)\MSSQLLocalDB;Database=AerialWatch;Trusted_Connection=True;MultipleActiveResultSets=true;TrustServerCertificate=True'
+
+# Store uploads/logs/exports outside the source, under your Windows account:
+$env:Storage__RootPath = Join-Path $env:USERPROFILE 'AerialWatchData'
+$env:Training__ExportRoot = Join-Path $env:Storage__RootPath 'training-exports'
+New-Item -ItemType Directory -Force -Path $env:Storage__RootPath, $env:Training__ExportRoot | Out-Null
+```
+
+Only use a connection-string line for an instance that actually exists. `.` means the local default instance;
+`.\SQLEXPRESS` means the named Express instance; `(localdb)\MSSQLLocalDB` means the current user's LocalDB instance.
+For LocalDB, `sqllocaldb info` lists installed instances and `sqllocaldb start MSSQLLocalDB` starts that instance if it exists.
+For the other installations, ensure the matching SQL Server Windows service is running.
+
+These are **current-terminal** environment variables. Keep terminal A open for migrations and the backend.
+Repeat the assignments when opening a new backend/migration terminal. They override JSON settings for both EF and the API;
+this is important so you do not migrate one database and run the API against another.
+The frontend terminal does not need these variables. A standalone `.env` file is not automatically loaded by the .NET configuration here.
+
+The checked-in JSON defaults are `Server=.` / database `AerialWatch`, `C:\AerialWatchData` for storage and
+`C:\AerialWatchData\training-exports` for exports. If these already work for your account, the path overrides are optional.
+Alternatively, configure the corresponding `ConnectionStrings:AerialWatch`, `Storage:RootPath`, and `Training:ExportRoot`
+settings locally; do not commit passwords or another person's machine paths. `appsettings.local.json` is not automatically loaded.
+For SQL authentication or a remote server, get the real connection details from the owner rather than inventing credentials.
+Windows-authenticated setup requires your Windows login to have permission to create/upgrade this development database.
+
+### 3. Follow the Run sections in order
+
+In terminal A, run **Backend** below: restore dependencies, apply existing migrations, then start the API.
+Use **terminal B** for **Frontend**. The database must be ready before using the app.
+For daily use, repeat the terminal-A settings, apply any newly supplied migrations, start the API, then start Vite.
+Use Ctrl+C in each server terminal to stop the development servers.
+
 
 ## Run
 
@@ -32,35 +109,171 @@ src/
 **Command line:**
 ```powershell
 cd src\backend
-dotnet tool install --global dotnet-ef --version 8.0.10      # once
+dotnet restore AerialWatch.sln                 # downloads NuGet packages; internet required on first setup
+dotnet tool install --global dotnet-ef --version 8.0.10      # once; use this EF version with the checked-in 8.0.10 packages
 dotnet ef database update --project AerialWatch.Infrastructure --startup-project AerialWatch.Api   # creates the database + tables + published coefficients
-dotnet test                                    # unit tests + 4 SQL Server integration tests (local SQL Server)
-dotnet test AerialWatch.UnitTests              # unit tests only (no database needed)
 dotnet run --project AerialWatch.Api --launch-profile AerialWebAPI
 ```
-Check: http://localhost:5080/health shows `{"status":"ok","database":"SqlServer","databaseConnected":true}`.
-Integration tests create and drop their own `AerialWatch_Test_…` databases; set `AERIALWATCH_TEST_SQL_SERVER` to use
-another server (e.g. `localhost\SQLEXPRESS`).
+If `dotnet-ef` is already installed, inspect `dotnet ef --version` rather than reinstalling it blindly.
+Use the project-compatible 8.0.10 tool for this checkout; `dotnet tool update --global dotnet-ef --version 8.0.10`
+updates a compatible existing installation. A conflicting global major version should be resolved deliberately, since other projects may use it.
 
-Change the connection string in `AerialWatch.Api/appsettings.json` → `ConnectionStrings:AerialWatch` if you use SQL Express.
+Check [API health](http://localhost:5080/health). The JSON should include `status: "ok"`, `database: "SqlServer"`
+and `databaseConnected: true`. HTTP 503 / `degraded` means SQL Server is unreachable; fix that before continuing.
+A health pass checks connectivity, not that every migration/table is present. [Swagger](http://localhost:5080/swagger)
+is available with the Development launch profile. In another terminal you can check:
+
+```powershell
+Invoke-RestMethod 'http://localhost:5080/health'
+```
+
+The `AerialWebAPI` profile sets **Development**, where checked-in `Authentication:DevelopmentBypass = true`
+provides a local Admin identity. Outside Development the API requires authentication and sign-in is not implemented;
+anonymous calls return 401 and denied roles return 403. Keep this setup local; do not enable a bypass outside Development.
+Integration tests create and drop their own `AerialWatch_Test_…` databases; they require database-create/drop permissions.
+They use server `.` by default and do **not** take their server from `ConnectionStrings__AerialWatch`.
+Before running the full suite, set their server explicitly when using Express or LocalDB, for example:
+
+```powershell
+$env:AERIALWATCH_TEST_SQL_SERVER = '.\SQLEXPRESS' # or '(localdb)\MSSQLLocalDB', matching YOUR chosen instance
+```
+
+Once the test server is configured, run these from `src/backend` in another terminal (or stop the API first):
+
+```powershell
+dotnet test AerialWatch.UnitTests              # unit tests only; no database required
+dotnet test AerialWatch.sln                    # full suite, including real SQL Server tests
+```
+
+The unit-only command does not need SQL Server. Do not claim a test pass unless the command prints a passing summary.
+
+**Visual Studio configuration:** variables set in terminal A are not automatically inherited by an already-open Visual Studio.
+Either launch the API from that terminal as shown above, or set the same connection/storage/export values locally in
+`AerialWatch.Api/appsettings.Development.json`, retaining its existing logging/authentication settings. EF reads that file too.
+Use your local values rather than overwriting the file with another person's settings; do not commit credentials.
 
 ### 2. Frontend: http://localhost:5173
 ```powershell
 cd src\frontend
-npm install
-npm run dev
+npm ci                         # install the exact lockfile dependencies, including development tools
+npm run dev -- --strictPort     # fail clearly if 5173 is occupied
 ```
+Open [Aerial Watch](http://localhost:5173/wfp). These commands are run from the workspace root in terminal B,
+not from terminal A's `src/backend` directory. Use `npm.cmd` instead of `npm` if PowerShell blocks the npm script.
 Vite proxies `/api` and `/health` to port 5080. The top bar includes a grid app launcher: WFP (Watch Feral Pigs), WWL (Watch Wetlands), and WGN (Watch Ghost Net). Full names appear on hover or keyboard focus; WWL and WGN are coming soon.
 
-### 3. Detection service (optional until the AI step is wired in): http://localhost:8000
+### 3. Detection service (optional; standalone): http://localhost:8000
 ```powershell
 cd src\ml
-python -m venv .venv; .venv\Scripts\activate
-pip install -r requirements-dev.txt
-python -m pytest -q tests                        # 13 tests
-uvicorn aerialwatch_ml.service:app --port 8000   # no weights yet -> hotspot baseline
+py -3.12 -m venv .venv                          # or py -3.11 if that is the installed supported version
+.\.venv\Scripts\python.exe -m pip install -r requirements-dev.txt
+.\.venv\Scripts\python.exe -m pytest -q tests
+.\.venv\Scripts\python.exe -m uvicorn aerialwatch_ml.service:app --port 8000
 ```
 Training and evaluation: `src/ml/README.md` and `docs/09-machine-learning-plan.md`.
+
+Run this in **terminal C** from the workspace root. Calling the virtual environment's Python directly avoids activation-policy problems.
+Read [ML agent rules](ml/AGENTS.md) before ML work and [ML setup](ml/README.md) for weights and inference configuration.
+No weights: thermal uses the hotspot baseline; RGB returns 503. YOLO inference additionally needs the dependencies
+in `requirements-train.txt` and separately supplied, permitted weights. The checked-in .NET infrastructure has no registered
+ML HTTP client yet: starting Python alone does not connect an automatic Run AI workflow. Frontend never calls Python directly.
+
+## Database migrations: first install, updates and verification
+
+Run from **`src/backend`**, in the same configured terminal as the backend:
+
+```powershell
+# See which migrations exist and their application status:
+dotnet ef migrations list --project AerialWatch.Infrastructure --startup-project AerialWatch.Api
+
+# Apply ALL unapplied checked-in migrations (first setup or after receiving new code):
+dotnet ef database update --project AerialWatch.Infrastructure --startup-project AerialWatch.Api
+```
+
+This creates a fresh `AerialWatch` database if needed, applies schema/data changes, and seeds the published model coefficients.
+You do not need a separate manual CREATE TABLE or seed script. The migration project is **AerialWatch.Infrastructure**,
+not any leftover `AerialWatch.Persistence` folder. Existing successful migrations are tracked in `__EFMigrationsHistory`;
+running `database update` again applies pending migrations, not duplicate tables or demo surveys.
+If updating an existing database, back it up first. Never drop a friend's existing database to fix a setup error.
+
+Optional inspection in SSMS, connected to the **same configured instance and database**:
+
+```sql
+USE [AerialWatch];
+SELECT [MigrationId] FROM [dbo].[__EFMigrationsHistory] ORDER BY [MigrationId];
+SELECT COUNT(*) AS PublishedAndCustomSets FROM [wfp].[ModelCoefficientSets];
+SELECT COUNT(*) AS CoefficientValues FROM [wfp].[ModelCoefficientValues];
+```
+
+`dbo.__EFMigrationsHistory` is EF's bookkeeping table; application tables use `wfp` or `core`, not dbo.
+Migration history should match the migrations shipped with your copy. A fresh database should have seeded coefficient rows,
+while surveys/photos remain empty. Health alone does not verify this.
+
+**Developers changing the database schema only:** add a migration after the EF model/configuration changes, review its code,
+update `docs/08-database-schema.md`, then apply it manually. Ordinary new-PC setup uses the existing migrations above;
+do not generate a new initial migration or remove the snapshot.
+
+```powershell
+# Replace DescribeYourChange with a meaningful migration name:
+dotnet ef migrations add DescribeYourChange --project AerialWatch.Infrastructure --startup-project AerialWatch.Api --output-dir Persistence/Migrations
+```
+
+The API never calls EnsureCreated/Migrate to initialise your application database. Do not add startup auto-migration as a workaround.
+
+## Verify the complete setup
+
+1. Confirm all migrations are applied and the health endpoint reports database connectivity.
+2. Open `/wfp`: the dashboard loads (zero surveys is normal on a new database).
+3. Open the planner: study windows and model parameters should load from the backend.
+4. Create a test survey using your own or synthetic data; upload a permitted test image, review it manually, complete review,
+   and use **View results**. Check that estimates include ranges and assumptions. Photos without GPS work but cannot supply map locations.
+5. Stop/restart the backend with the same settings: the survey and uploaded photo should still be available.
+6. From `src/frontend`, run `npm run lint`, `npm test`, and `npm run build`. From `src/backend`, run the unit tests and,
+   with the correct test SQL instance configured, the full `dotnet test AerialWatch.sln` suite. Record actual summaries.
+
+`npm run build` creates `dist`; it does not deploy the API or configure production hosting.
+The Vite development proxy belongs to `npm run dev`, so use that for this local setup rather than treating preview as a complete deployment.
+Online basemap tiles require internet access; a tile outage does not mean the survey database is missing.
+
+## If you want existing surveys on the new PC
+
+The source archive alone is insufficient. With the owner's permission, transfer a **SQL Server backup** and the corresponding
+uploaded-file storage tree, preserving relative file names/paths. Restore into the intended instance/database and point
+`Storage:RootPath` at that copied tree. A database without the files gives missing photos; files without the database give no survey records.
+Use a compatible SQL Server version for the backup restore and back up any target data before replacing it.
+After restore, check/apply any pending migrations from the new code. Model weights are separate from both.
+NACAS/Indigenous/restricted imagery is not part of a standard handover: obtain permission first, follow the root/ML agent rules,
+and never put it in source control, cloud assistants or screenshots. Start fresh with permitted test images when permission is absent.
+
+## Common setup problems
+
+| Symptom | What to check |
+|---|---|
+| `dotnet` not found / framework missing | Install the .NET **8 SDK** and reopen the terminal; check `dotnet --list-sdks`. |
+| EF tool not found | Install the pinned tool above; reopen PowerShell so `%USERPROFILE%\.dotnet\tools` is on PATH. |
+| SQL network/instance/login error | Correct `Server=`, start that engine/service, and check Windows login permissions. SSMS must connect to the exact same instance. |
+| `Invalid object name` / missing columns | Apply all pending migrations against the API's actual connection string. Do not regenerate the initial schema. |
+| NuGet/npm restore fails | First setup needs access to nuget.org and the configured npm registry; check connectivity/proxy/certificates. Do not silently change dependencies to work around a network error. |
+| 401/403 in local app | Use `--launch-profile AerialWebAPI`, confirm Development and the local bypass setting; do not change controller authorization. |
+| Upload/access denied | Storage/export folders must be writable by the account running the API. Check both path overrides and restart with the same settings. |
+| Frontend loads but API requests fail | Keep backend running at 5080; verify `/health`; check Vite's proxy in `frontend/vite.config.ts`. |
+| Port 5080 or 5173 occupied | Stop your older app instance or deliberately coordinate API launch URL, Vite proxy, frontend origin and CORS. Do not silently run one part on a different port. |
+| Existing photos unavailable | Check the matching storage tree as well as the database, not just a successful migration. |
+| Integration tests fail while unit tests pass | Configure `AERIALWATCH_TEST_SQL_SERVER`; ensure permission to create/drop the test databases. |
+| Photos have no basemap / RGB detection unavailable | Check tile connectivity / optional ML weights separately; do not fabricate locations or AI results. |
+
+## Handoff instructions for a coding agent on the new PC
+
+- Read root `AGENTS.md` first, then the linked research/decision/architecture docs. For ML, also read `src/ml/AGENTS.md`.
+- Inspect this PC's paths, installed tools, SQL instance, and existing data before changing settings. These examples do not authorise
+  copying Gaurav's private folders or using his Windows username. Do not assume this checkout's remote URL or Git metadata exists.
+- Follow the sections above in order. Keep the connection/storage overrides in the backend/migration terminal and use separate frontend/optional-ML terminals.
+- Apply the **existing** migrations only after checking the target database. Do not drop data, recreate migrations, change coefficients,
+  enable startup migrations, substitute another database, or weaken authentication to fix setup problems.
+- Preserve existing project structure and local changes. Run commands from their documented working directory.
+- Report actual versions, non-sensitive instance/database names, migration status, health result, frontend checks and test summaries.
+  Never print credential-bearing connection strings. If blocked, report the failing command and useful error text; do not claim a pass.
+
 
 ## Status
 | Slice | Status |
