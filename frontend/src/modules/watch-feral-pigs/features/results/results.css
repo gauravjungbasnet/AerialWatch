@@ -32,13 +32,16 @@
 }
 @media (min-width: 1280px) and (min-height: 800px) {
   .results-workspace--map {
+    /* Layout tokens: the photo sheet is placed from these, not from fixed offsets (docs/18 step 5). */
+    --results-panel: 21rem;
+    --results-gap: 1.5rem;
     position: relative;
     isolation: isolate;
-    grid-template-columns: 21rem minmax(0, 1fr);
+    grid-template-columns: var(--results-panel) minmax(0, 1fr);
     align-items: start;
     align-content: stretch;
-    gap: 1.5rem;
-    padding: 1.5rem;
+    gap: var(--results-gap);
+    padding: var(--results-gap);
     height: 100%;
     min-height: 46rem;
   }
@@ -105,9 +108,13 @@
     align-self: end;
     margin-bottom: 1rem;
   }
+  /* Inside the workspace (not the viewport), so the sidebar width never matters. */
   .results-workspace--map .results-sheet {
-    inset: auto 1.5rem 0 auto;
-    width: calc(100% - 40rem);
+    /* No grid area, so it is placed against the workspace's padding box. */
+    grid-area: auto;
+    position: absolute;
+    inset: auto var(--results-gap) 0 auto;
+    width: min(64rem, calc(100% - var(--results-panel) - 3 * var(--results-gap)));
     margin: 0;
   }
 }
@@ -119,7 +126,6 @@
 /* Selected evidence needs room for two image panes; the photo list stays compact. */
 @media (min-width: 1280px) and (min-height: 800px) {
   .results-workspace--map .results-sheet--image {
-    width: min(64rem, calc(100% - 3rem));
-    max-width: 64rem;
+    width: min(64rem, calc(100% - 2 * var(--results-gap)));
   }
 }

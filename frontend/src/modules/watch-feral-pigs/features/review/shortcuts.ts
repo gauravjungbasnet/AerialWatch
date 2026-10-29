@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useKeyboardShortcuts } from '@shared/review/useKeyboardShortcuts';
 
 export type ShortcutAction =
   | 'nextPhoto'
@@ -96,34 +96,7 @@ function actionFor(e: KeyboardEvent): ShortcutAction | null {
   }
 }
 
-/** True when the key press belongs to a form field or a focused control, which keeps its normal behaviour. */
-function isTyping(e: KeyboardEvent): boolean {
-  const t = e.target as HTMLElement | null;
-  if (!t) return false;
-  if (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName)) return true;
-  // Space/Enter on a focused button or link activates it; don't also run the shortcut.
-  return e.key === ' ' && (t.tagName === 'BUTTON' || t.tagName === 'A');
-}
-
-/** Global review shortcuts. Ignored while typing, while a dialog is open, or when `enabled` is false. */
+/** Global review shortcuts (WFP key map on the shared keyboard hook). Off before the review starts. */
 export function useReviewShortcuts(handler: (action: ShortcutAction) => void, enabled: boolean) {
-  const ref = useRef(handler);
-  ref.current = handler;
-
-  useEffect(() => {
-    if (!enabled) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (isTyping(e) || document.querySelector('[role="dialog"], dialog[open]')) return;
-      const action = actionFor(e);
-      if (!action) return;
-      if (e.repeat && (action === 'undoDrawing' || action === 'redoDrawing')) {
-        e.preventDefault();
-        return;
-      }
-      e.preventDefault();
-      ref.current(action);
-    };
-    window.addEventListener('keydown', onKey);
-    return () => window.removeEventListener('keydown', onKey);
-  }, [enabled]);
+  useKeyboardShortcuts(actionFor, handler, { enabled, noRepeat: ['undoDrawing', 'redoDrawing'] });
 }

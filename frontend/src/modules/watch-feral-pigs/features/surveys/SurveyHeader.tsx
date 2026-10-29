@@ -3,25 +3,15 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BarChart3, CalendarDays, ChevronLeft, Clock, Images, Info, MapPin, ScanSearch, Trash2 } from 'lucide-react';
 import type { SurveyDetail } from '../../api/types';
 import { Button, ButtonLink, ErrorAlert, Modal } from '@shared/controls';
+import { calendarDate, ntDate } from '@shared/lib/dates';
 import { wfpPath } from '../../paths';
 import { SurveyStatusBadge } from '../../components';
 import { useDeleteSurvey } from './hooks';
 import { AssumptionsPanel } from '../../components';
 
 const longDate = (iso: string) =>
-  new Date(`${iso}T00:00:00`).toLocaleDateString('en-AU', {
-    weekday: 'short',
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-  });
-const createdOn = (iso: string) =>
-  new Date(iso).toLocaleDateString('en-AU', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    timeZone: 'Australia/Darwin',
-  });
+  calendarDate(iso, { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+const createdOn = (iso: string) => ntDate(iso, { day: 'numeric', month: 'short', year: 'numeric' });
 
 /**
  * Page header for one survey: back link, "Survey: name", status badge and a meta line (site, flight date and time,

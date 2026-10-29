@@ -7,14 +7,18 @@ Start at `src/main.tsx`, then `src/app/App.tsx`. The app shell selects a module 
 | `src/shared/controls/` | Reusable Windmill controls: buttons, forms, cards, tables, feedback and dialogs |
 | `src/shared/components/navigation/` | Generic sidebar renderer and navigation types |
 | `src/shared/api/` | HTTP transport, API error handling and common error contract |
-| `src/shared/lib/`, `src/shared/styles/` | Helpers, theme and design tokens |
+| `src/shared/lib/`, `src/shared/styles/` | Helpers (`dates.ts` for every date/time, `format.ts`, `theme.ts`), theme and design tokens |
+| `src/shared/maps/` | `MapView` (Leaflet) and neutral map types; modules pass points from an adapter |
+| `src/shared/routing/` | `lazyPage` for routes loaded on demand |
+| `src/shared/review/` | `useKeyboardShortcuts` for workspace shortcuts |
 | `src/app/layout/` | Platform layout, header and sidebar composition |
 | `src/app/components/` | App launcher and selected-app identity |
 | `src/app/registry.ts` | Launcher entries and the currently implemented app |
 | `src/modules/watch-feral-pigs/` | WFP module definition, routes and navigation |
 | `src/modules/watch-feral-pigs/features/` | Dashboard, planner, surveys, admin and about views, hooks and helpers |
 | `src/modules/watch-feral-pigs/components/` | WFP components used by more than one feature (status badge, survey table, research blocks) |
-| `src/modules/watch-feral-pigs/adapters/` | WFP records → shared capability models: `annotations.ts` turns pig boxes, twin marks and sightings into viewer `Annotation`s |
+| `src/modules/watch-feral-pigs/adapters/` | WFP records → shared capability models: `annotations.ts` turns pig boxes, twin marks and sightings into viewer `Annotation`s; `mapPoints.ts` turns photo locations into map points |
+| `src/app/dev/` | Dev-only `/dev/shared` example of the shared viewer, comparison and map (synthetic data, no module imports) |
 | `src/modules/watch-feral-pigs/domain/` | WFP rules and labels with no React or API: cameras, seasons, time windows, box appearance |
 | `src/modules/watch-feral-pigs/api/` | `contracts/` (DTO mirrors per feature), `endpoints/` (calls per feature), `keys.ts` (every query key), `queries/` (server-state hooks used by more than one feature); `types.ts` and `client.ts` re-export them |
 
@@ -83,3 +87,21 @@ Review keeps persistence, history, twin matching and labels in WFP adapters/hook
 - `features/review/ImageViewer.tsx` is the review preset (zoom, pan, selection; editing only while the review is open). `ImageComparison` takes typed pane ids.
 - `tests/wfp-annotations.test.mjs` checks numbering, labels, styles, ids and which marks appear on each photo.
 
+## Review split, shared map, dates and buttons (30 Oct 2026, docs/18 steps 4–7)
+
+- **Review:** `ReviewPage.tsx` only composes. Logic: `useReviewQueue` (photo/filter in the URL, next/previous, preload),
+  `useBoxSelection`, `useReviewCommands` (decisions, delete, check-and-next, flag, edit lock), `useTwinCoordination`
+  (twin photo rules D-039–D-041). UI: `ReviewHeader`, `ReviewToolbar`, `PhotoActions`, `ShortcutHelpCard`,
+  `ViewerPanel`. Shortcuts are a keymap in the page; key reading is `shared/review/useKeyboardShortcuts`.
+- **Map:** `<MapView points path selectedId onSelect overlays label />`. `overlays` are elements floating over the map
+  (summary panel, photo sheet, legend); the map measures them, so no pixel offsets. Results sheet position comes from
+  `--results-panel` / `--results-gap` in `results.css`.
+- **Lazy routes:** `lazyPage(() => import('./features/review/ReviewPage'), 'ReviewPage')`. Leaflet is only in the Results
+  chunk.
+- **Dates:** `ntTime`, `ntDate`, `ntDateTime`, `calendarDate`, `todayIso` from `@shared/lib/dates`. `@shared/lib/format`
+  still re-exports `ntTime`/`todayIso` for older files; new code imports from `dates`.
+- **Buttons:** `IconButton` (`label`, `icon`, `tone`: neutral/success/danger/quietDanger, `size`), `PlainButton` for
+  rows and thumbnails, `ToggleButton` for Select/Draw tools.
+- **Example:** `npm run dev`, then open `/dev/shared`. Not included in `npm run build`.
+- **Tests:** `tests/load-ts.mjs` loads a TypeScript file (with `@shared`/`@modules` aliases) for `node:test`; use it for
+  new pure-logic tests.

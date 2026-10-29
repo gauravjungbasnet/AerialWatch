@@ -1,6 +1,6 @@
 import type { CameraType } from '../../api/types';
 import { Card, FormField, Input, SegmentedControl, Select } from '@shared/controls';
-import { seasonFromDate } from '@shared/lib/format';
+import { seasonFromDate } from '../../domain/seasons';
 import { CAMERA_OPTIONS, seasonOptions, type SeasonChoice } from './constants';
 
 interface Props {

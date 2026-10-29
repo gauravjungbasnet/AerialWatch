@@ -9,6 +9,7 @@ import {
   DataGrid,
   ErrorAlert,
   FilterBar,
+  IconButton,
   Modal,
   PageHeader,
   type DataGridColumn,
@@ -119,14 +120,13 @@ export function SurveysPage() {
           >
             View <ChevronRight className="size-4" aria-hidden="true" />
           </Link>
-          <button
-            type="button"
+          <IconButton
+            label={`Delete ${s.name}`}
+            tone="quietDanger"
+            size="sm"
             onClick={() => setToDelete(s)}
-            aria-label={`Delete ${s.name}`}
-            className="rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-red-600 focus:outline-none focus-visible:ring-focus dark:text-gray-400 dark:hover:bg-gray-700"
-          >
-            <Trash2 className="size-4" aria-hidden="true" />
-          </button>
+            icon={<Trash2 className="size-4" aria-hidden="true" />}
+          />
         </div>
       ),
     },

@@ -3,7 +3,8 @@ import { ExternalLink, Info } from 'lucide-react';
 import { wfpApi } from '../../api/client';
 import type { CameraType, ReviewImageDetail, TwinCheck } from '../../api/types';
 import { Alert, Badge, Button, ButtonLink, Modal, ErrorAlert, SkeletonRows } from '@shared/controls';
-import { ntTime, percent } from '@shared/lib/format';
+import { percent } from '@shared/lib/format';
+import { ntDate, ntTime } from '@shared/lib/dates';
 import { cameraName } from '../../domain/cameras';
 import { wfpPath } from '../../paths';
 import { boxStyle } from '../../domain/boxAppearance';
@@ -235,9 +236,7 @@ function Evidence({
                 <dt className="text-gray-500 dark:text-gray-400">Checked by</dt>
                 <dd className="break-words">
                   {image.reviewedBy}
-                  {image.reviewedAt
-                    ? ` · ${new Date(image.reviewedAt).toLocaleDateString('en-AU', { timeZone: 'Australia/Darwin' })}`
-                    : ''}
+                  {image.reviewedAt ? ` · ${ntDate(image.reviewedAt)}` : ''}
                 </dd>
               </>
             )}

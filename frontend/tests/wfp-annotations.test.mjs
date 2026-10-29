@@ -1,28 +1,8 @@
-import { existsSync, readFileSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import ts from 'typescript';
+import { loadTs } from './load-ts.mjs';
 
-// Load the WFP adapter as CommonJS, resolving relative imports and the @shared alias (docs/18 step 3).
-const src = fileURLToPath(new URL('../src/', import.meta.url));
-const cache = new Map();
-function load(path) {
-  if (cache.has(path)) return cache.get(path).exports;
-  const module = { exports: {} };
-  cache.set(path, module);
-  const js = ts.transpileModule(readFileSync(path, 'utf8'), {
-    compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 },
-  }).outputText;
-  const localRequire = (name) => {
-    const base = name.startsWith('@shared/') ? resolve(src, 'shared', name.slice(8)) : resolve(dirname(path), name);
-    return load([`${base}.ts`, `${base}.tsx`, resolve(base, 'index.ts')].find(existsSync));
-  };
-  new Function('require', 'module', 'exports', js)(localRequire, module, module.exports);
-  return module.exports;
-}
-const a = load(resolve(src, 'modules/watch-feral-pigs/adapters/annotations.ts'));
+const a = loadTs('modules/watch-feral-pigs/adapters/annotations.ts');
 
 const box = (id, status, source = 'ai', confidence = 0.87) => ({
   id,

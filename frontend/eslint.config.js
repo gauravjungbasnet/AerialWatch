@@ -60,6 +60,25 @@ export default tseslint.config(
     files: ['src/modules/**/*.{ts,tsx}'],
     rules: { 'no-restricted-imports': ['error', { patterns: modulePatterns }] },
   },
+  // The dev-only example proves the shared components work without any module (docs/18 step 7).
+  {
+    files: ['src/app/dev/**/*.{ts,tsx}'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            forbid(
+              'The shared-components example must use shared/ only, never a module (docs/18 step 7).',
+              '@modules',
+              '**/modules',
+              '**/watch-*',
+            ),
+          ],
+        },
+      ],
+    },
+  },
   // A feature never imports another feature (docs/18 §6). Code two features need lives at module level:
   // api/queries, api/keys, components/ or domain/. ESLint replaces rule options per block, so repeat the module rules.
   {

@@ -42,6 +42,10 @@ export function ResultsPage() {
     setPhotosOpen(true);
   }, []);
   const closePhotos = useCallback(() => setPhotosOpen(false), []);
+  // Panels that float over the map on large screens; the map measures them instead of assuming their size.
+  const [summaryPanel, setSummaryPanel] = useState<HTMLElement | null>(null);
+  const [photoButton, setPhotoButton] = useState<HTMLElement | null>(null);
+  const [photoSheet, setPhotoSheet] = useState<HTMLElement | null>(null);
 
   if (survey.isLoading || results.isLoading)
     return (
@@ -69,7 +73,7 @@ export function ResultsPage() {
 
   return (
     <div className={`results-workspace ${hasGps ? 'results-workspace--map' : ''}`}>
-      <section className="results-summary relative z-10 min-w-0" aria-label="Survey results">
+      <section ref={setSummaryPanel} className="results-summary relative z-10 min-w-0" aria-label="Survey results">
         <Card bodyClassName="p-4! sm:p-5!" className="shadow-lg">
           <div className="space-y-4">
             <div>
@@ -154,7 +158,13 @@ export function ResultsPage() {
 
       <section className="results-map min-w-0" aria-label="Photo locations">
         {hasGps ? (
-          <PhotoMap photos={r.photos} selectedPhoto={selectedPhoto} onSelectPhoto={selectMapPhoto} immersive />
+          <PhotoMap
+            photos={r.photos}
+            selectedPhoto={selectedPhoto}
+            onSelectPhoto={selectMapPhoto}
+            overlays={[summaryPanel, photoButton, photoSheet]}
+            immersive
+          />
         ) : (
           <Card title="No photo locations" className="h-full">
             <p className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
@@ -165,7 +175,7 @@ export function ResultsPage() {
         )}
       </section>
 
-      <div className="results-photo-trigger relative z-10">
+      <div ref={setPhotoButton} className="results-photo-trigger relative z-10">
         <Button
           className="min-h-11 shadow-lg"
           icon={<Images size={18} aria-hidden="true" />}
@@ -179,7 +189,10 @@ export function ResultsPage() {
         </Button>
       </div>
       {photosOpen && (
-        <div className={`results-photos results-sheet z-20 min-w-0 ${photoFilter ? 'results-sheet--image' : ''}`}>
+        <div
+          ref={setPhotoSheet}
+          className={`results-photos results-sheet z-20 min-w-0 ${photoFilter ? 'results-sheet--image' : ''}`}
+        >
           <BottomSheet
             open={photosOpen}
             title={

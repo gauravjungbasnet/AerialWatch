@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { CheckCircle2, ChevronLeft, ChevronRight, Flag } from 'lucide-react';
-import { Button, Card } from '@shared/controls';
+import { Button, Card, PlainButton } from '@shared/controls';
 import type { ReviewImage, ReviewImageFilter } from '../../api/types';
 import { FILTERS } from './filters';
 import { wfpApi } from '../../api/client';
@@ -92,15 +92,14 @@ export function PhotoStrip({ images, currentId, filter, onFilter, onOpen, loadin
                 .join(', ');
               return (
                 <li key={img.id} className="shrink-0">
-                  <button
+                  <PlainButton
                     ref={current ? currentRef : undefined}
-                    type="button"
                     onClick={() => onOpen(img.id)}
                     aria-current={current ? 'true' : undefined}
                     aria-label={`Photo ${i + 1}: ${img.fileName}, ${status}`}
                     title={img.fileName}
                     className={cx(
-                      'relative block h-[72px] w-24 overflow-hidden rounded-md border-2 bg-gray-200 focus:outline-none focus-visible:ring-focus dark:bg-gray-700',
+                      'relative block h-[72px] w-24 overflow-hidden rounded-md border-2 bg-gray-200 dark:bg-gray-700',
                       current ? 'border-brand-600' : 'border-transparent hover:border-gray-400',
                     )}
                   >
@@ -126,7 +125,7 @@ export function PhotoStrip({ images, currentId, filter, onFilter, onOpen, loadin
                         <span className="rounded bg-green-600 px-1 py-0.5 text-white">{img.confirmed}</span>
                       )}
                     </span>
-                  </button>
+                  </PlainButton>
                 </li>
               );
             })}

@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import { Check, EyeOff, RotateCcw, Trash2 } from 'lucide-react';
 import type { CameraType, TwinCheck, TwinImage, TwinMark, TwinSighting } from '../../api/types';
-import { Card } from '@shared/controls';
+import { Card, IconButton, PlainButton } from '@shared/controls';
 import { cx } from '@shared/lib/format';
 import { cameraName } from '../../domain/cameras';
 import { sightingId } from '../../adapters/annotations';
@@ -21,11 +21,6 @@ interface Props {
   onSightingNotVisible(s: TwinSighting, notVisible: boolean): void;
   onRemoveSighting(s: TwinSighting): void;
 }
-
-const btn =
-  'inline-flex size-11 shrink-0 items-center justify-center rounded-lg border text-sm focus:outline-none focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-40';
-const ok = cx(btn, 'border-green-300 text-green-700 hover:bg-green-50 dark:text-green-300');
-const plain = cx(btn, 'border-gray-300 text-gray-700 hover:bg-gray-50 dark:text-gray-300');
 
 const markText = { suggested: 'Suggested position', confirmed: 'Placed', notVisible: 'Not visible' } as const;
 
@@ -75,36 +70,30 @@ export function TwinCheckCard({
             >
               {editable && (
                 <>
-                  <button
-                    type="button"
-                    className={ok}
+                  <IconButton
+                    tone="success"
                     title="Position is correct"
-                    aria-label={`Pig ${m.number}: position on ${twinName} is correct`}
+                    label={`Pig ${m.number}: position on ${twinName} is correct`}
                     disabled={m.x == null || m.state === 'confirmed'}
                     onClick={() => onPlace(m)}
-                  >
-                    <Check className="size-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    className={plain}
+                    icon={<Check className="size-4" aria-hidden="true" />}
+                  />
+                  <IconButton
+                    tone="neutral"
                     title={`Not visible on ${twinName}`}
-                    aria-label={`Pig ${m.number}: not visible on ${twinName}`}
+                    label={`Pig ${m.number}: not visible on ${twinName}`}
                     disabled={m.state === 'notVisible'}
                     onClick={() => onNotVisible(m)}
-                  >
-                    <EyeOff className="size-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    className={plain}
+                    icon={<EyeOff className="size-4" aria-hidden="true" />}
+                  />
+                  <IconButton
+                    tone="neutral"
                     title="Back to the suggestion"
-                    aria-label={`Pig ${m.number}: back to the suggestion`}
+                    label={`Pig ${m.number}: back to the suggestion`}
                     disabled={m.state === 'suggested'}
                     onClick={() => onReset(m)}
-                  >
-                    <RotateCcw className="size-4" aria-hidden="true" />
-                  </button>
+                    icon={<RotateCcw className="size-4" aria-hidden="true" />}
+                  />
                 </>
               )}
             </Row>
@@ -124,40 +113,36 @@ export function TwinCheckCard({
             >
               {editable && (
                 <>
-                  <button
-                    type="button"
-                    className={ok}
+                  <IconButton
+                    tone="success"
                     title={`Correct: count it on ${countedName}`}
-                    aria-label={`${s.label}: position on ${countedName} is correct, count it`}
+                    label={`${s.label}: position on ${countedName} is correct, count it`}
                     disabled={s.x == null || s.state === 'notVisibleOnCounted'}
                     onClick={() => onConfirmSighting(s)}
-                  >
-                    <Check className="size-4" aria-hidden="true" />
-                  </button>
-                  <button
-                    type="button"
-                    className={plain}
+                    icon={<Check className="size-4" aria-hidden="true" />}
+                  />
+                  <IconButton
+                    tone="neutral"
                     title={
                       s.state === 'notVisibleOnCounted' ? 'Back to the suggestion' : `Not visible on ${countedName}`
                     }
-                    aria-label={`${s.label}: ${s.state === 'notVisibleOnCounted' ? 'back to the suggestion' : `not visible on ${countedName}`}`}
+                    label={`${s.label}: ${s.state === 'notVisibleOnCounted' ? 'back to the suggestion' : `not visible on ${countedName}`}`}
                     onClick={() => onSightingNotVisible(s, s.state !== 'notVisibleOnCounted')}
-                  >
-                    {s.state === 'notVisibleOnCounted' ? (
-                      <RotateCcw className="size-4" aria-hidden="true" />
-                    ) : (
-                      <EyeOff className="size-4" aria-hidden="true" />
-                    )}
-                  </button>
-                  <button
-                    type="button"
-                    className={plain}
+                    icon={
+                      s.state === 'notVisibleOnCounted' ? (
+                        <RotateCcw className="size-4" aria-hidden="true" />
+                      ) : (
+                        <EyeOff className="size-4" aria-hidden="true" />
+                      )
+                    }
+                  />
+                  <IconButton
+                    tone="neutral"
                     title="Remove"
-                    aria-label={`Remove ${s.label}`}
+                    label={`Remove ${s.label}`}
                     onClick={() => onRemoveSighting(s)}
-                  >
-                    <Trash2 className="size-4" aria-hidden="true" />
-                  </button>
+                    icon={<Trash2 className="size-4" aria-hidden="true" />}
+                  />
                 </>
               )}
             </Row>
@@ -201,14 +186,10 @@ function Row({
         id === selectedId ? 'border-brand-500 bg-brand-50 dark:bg-gray-700' : 'border-gray-200 dark:border-gray-700',
       )}
     >
-      <button
-        type="button"
-        className="min-h-11 flex-1 rounded-md px-1 text-left text-sm focus:outline-none focus-visible:ring-focus"
-        onClick={() => onSelect(id)}
-      >
+      <PlainButton className="min-h-11 flex-1 rounded-md px-1 text-left text-sm" onClick={() => onSelect(id)}>
         <span className="font-semibold">{title}</span>
         <span className="block text-xs text-gray-600 dark:text-gray-400">{detail}</span>
-      </button>
+      </PlainButton>
       {children}
     </li>
   );

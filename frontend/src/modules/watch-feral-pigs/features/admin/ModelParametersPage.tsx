@@ -1,27 +1,12 @@
 import { useState } from 'react';
 import { Pencil, RotateCcw } from 'lucide-react';
 import { ApiError } from '@shared/api/client';
-import type { ModelParametersHistoryItem, ModelParametersResponse } from '../../api/types';
-import {
-  Alert,
-  Badge,
-  Button,
-  ErrorAlert,
-  Input,
-  Modal,
-  PageHeader,
-  SectionTitle,
-  SkeletonRows,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHeadCell,
-  TableHeader,
-  TableRow,
-} from '@shared/controls';
-import { cx } from '@shared/lib/format';
+import type { ModelParametersResponse } from '../../api/types';
+import { Alert, Button, ErrorAlert, Modal, PageHeader, SkeletonRows } from '@shared/controls';
+import { ntDateTime } from '@shared/lib/dates';
 import { fromDraft, groupCoefficients, toDraft } from './parameterFields';
+import { ParameterTable } from './ParameterTable';
+import { SavedVersionsTable } from './SavedVersionsTable';
 import {
   useModelParameters,
   useModelParametersHistory,
@@ -118,76 +103,16 @@ export function ModelParametersPage() {
           )}
 
           {groups.map((group) => (
-            <section key={group.key} aria-labelledby={`${group.key}-title`}>
-              <SectionTitle>
-                <span id={`${group.key}-title`}>{group.title}</span>
-              </SectionTitle>
-              {group.note && <p className="-mt-2 mb-3 text-xs text-gray-500 dark:text-gray-400">{group.note}</p>}
-              <TableContainer>
-                <Table>
-                  <TableHeader>
-                    <tr>
-                      <TableHeadCell>Parameter</TableHeadCell>
-                      <TableHeadCell>Meaning</TableHeadCell>
-                      <TableHeadCell className="text-right">Published</TableHeadCell>
-                      <TableHeadCell className="w-56 text-right">Current</TableHeadCell>
-                    </tr>
-                  </TableHeader>
-                  <TableBody>
-                    {group.coefficients.map((c) => {
-                      const id = c.code;
-                      const changed = c.current !== c.published;
-                      const error = errorFor(id);
-                      return (
-                        <TableRow key={id}>
-                          <TableCell className="font-semibold text-gray-700 dark:text-gray-200">
-                            <label htmlFor={editing ? id : undefined}>{c.label}</label>
-                          </TableCell>
-                          <TableCell className="text-gray-600 dark:text-gray-400">{c.description}</TableCell>
-                          <TableCell className="text-right tabular-nums">{c.published}</TableCell>
-                          <TableCell className="text-right tabular-nums">
-                            {editing ? (
-                              <div className="ml-auto w-40">
-                                <Input
-                                  id={id}
-                                  inputMode="decimal"
-                                  value={draft[id] ?? ''}
-                                  onChange={(e) => setDraft({ ...draft, [id]: e.target.value })}
-                                  invalid={!!error}
-                                  aria-describedby={error ? `${id}-error` : undefined}
-                                  className="mt-0 text-right"
-                                />
-                                {error && (
-                                  <p
-                                    id={`${id}-error`}
-                                    className="mt-1 whitespace-normal text-left text-xs text-red-600"
-                                  >
-                                    {error}
-                                  </p>
-                                )}
-                              </div>
-                            ) : (
-                              <span
-                                className={cx(
-                                  'inline-flex items-center gap-2',
-                                  changed && 'font-semibold text-brand-600 dark:text-brand-300',
-                                )}
-                              >
-                                {changed && <Badge tone="warning">Edited</Badge>}
-                                {c.current}
-                              </span>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </section>
+            <ParameterTable
+              key={group.key}
+              group={group}
+              draft={draft}
+              onDraft={(code, value) => setDraft((d) => d && { ...d, [code]: value })}
+              errorFor={errorFor}
+            />
           ))}
 
-          <HistorySection items={history.data} loading={history.isLoading} />
+          <SavedVersionsTable items={history.data} loading={history.isLoading} />
 
           <p className="text-xs text-gray-500 dark:text-gray-400">
             Published values: {data.source} Values are logit coefficients; the planner turns them into percentages.
@@ -224,7 +149,7 @@ export function ModelParametersPage() {
 }
 
 function StatusAlert({ data }: { data: ModelParametersResponse }) {
-  const when = new Date(data.updatedAt).toLocaleString();
+  const when = ntDateTime(data.updatedAt);
   return data.isPublished ? (
     <Alert tone="success" title="Using the published values">
       Version {data.version}.
@@ -234,46 +159,5 @@ function StatusAlert({ data }: { data: ModelParametersResponse }) {
       Version {data.version}, changed {when}
       {data.updatedBy ? ` by ${data.updatedBy}` : ''}. Every result shows a warning until you reset.
     </Alert>
-  );
-}
-
-function HistorySection({ items, loading }: { items?: ModelParametersHistoryItem[]; loading: boolean }) {
-  return (
-    <section aria-labelledby="history-title">
-      <SectionTitle>
-        <span id="history-title">Saved versions</span>
-      </SectionTitle>
-      {loading && <SkeletonRows rows={3} />}
-      {items && (
-        <TableContainer>
-          <Table>
-            <TableHeader>
-              <tr>
-                <TableHeadCell>Version</TableHeadCell>
-                <TableHeadCell>Saved</TableHeadCell>
-                <TableHeadCell>By</TableHeadCell>
-                <TableHeadCell className="text-right">Values</TableHeadCell>
-              </tr>
-            </TableHeader>
-            <TableBody>
-              {items.map((item, i) => (
-                <TableRow key={item.id}>
-                  <TableCell className="font-semibold text-gray-700 dark:text-gray-200">
-                    <span className="inline-flex items-center gap-2">
-                      {item.version}
-                      {i === 0 && <Badge tone="success">In use</Badge>}
-                      {item.isPublished && <Badge>Published</Badge>}
-                    </span>
-                  </TableCell>
-                  <TableCell>{new Date(item.savedAt).toLocaleString()}</TableCell>
-                  <TableCell>{item.savedBy ?? '—'}</TableCell>
-                  <TableCell className="text-right tabular-nums">{item.values.length}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-    </section>
   );
 }

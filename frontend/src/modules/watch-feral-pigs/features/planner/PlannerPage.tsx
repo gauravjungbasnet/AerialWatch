@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import type { CameraType, Season } from '../../api/types';
 import { PageHeader } from '@shared/controls';
-import { seasonFromDate, todayIso } from '@shared/lib/format';
+import { todayIso } from '@shared/lib/dates';
+import { seasonFromDate } from '../../domain/seasons';
 import type { SeasonChoice } from './constants';
 import { ConditionsCard } from './ConditionsCard';
 import { WindowsCard } from './WindowsCard';

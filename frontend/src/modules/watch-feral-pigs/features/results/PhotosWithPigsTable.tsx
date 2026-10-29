@@ -1,6 +1,6 @@
 import type { PhotoPoint } from '../../api/types';
 import { Badge, Button, Card, DataGrid, EmptyState, type DataGridColumn } from '@shared/controls';
-import { ntTime } from '@shared/lib/format';
+import { ntTime } from '@shared/lib/dates';
 
 const columns: DataGridColumn<PhotoPoint>[] = [
   { field: 'fileName', header: 'Photo', sortable: true, className: 'max-w-48 truncate', title: (p) => p.fileName },

@@ -1,4 +1,5 @@
 import { Check, RotateCcw, Trash2, X } from 'lucide-react';
+import { IconButton, PlainButton } from '@shared/controls';
 import type { Detection } from '../../api/types';
 import { cx, percent } from '@shared/lib/format';
 import { boxStyle } from '../../domain/boxAppearance';
@@ -11,9 +12,6 @@ interface BoxListProps {
   onStatus(id: string, status: Detection['status']): void;
   onDelete(id: string): void;
 }
-
-const iconBtn =
-  'inline-flex size-11 items-center justify-center rounded-lg border text-sm focus:outline-none focus-visible:ring-focus disabled:cursor-not-allowed disabled:opacity-40';
 
 /**
  * Every box on the photo as a list (same numbers as on the photo): the keyboard- and screen-reader-friendly way to
@@ -46,11 +44,10 @@ export function BoxList({ boxes, selectedId, editable, onSelect, onStatus, onDel
             )}
           >
             <div className="flex items-center gap-2">
-              <button
-                type="button"
+              <PlainButton
                 onClick={() => onSelect(b.id)}
                 aria-pressed={selected}
-                className="flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded text-left focus:outline-none focus-visible:ring-focus"
+                className="flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded text-left"
               >
                 <span
                   aria-hidden="true"
@@ -66,63 +63,43 @@ export function BoxList({ boxes, selectedId, editable, onSelect, onStatus, onDel
                     {b.reviewedBy && b.status !== 'pending' ? ` · ${b.reviewedBy}` : ''}
                   </span>
                 </span>
-              </button>
+              </PlainButton>
 
               {editable && b.source === 'ai' && b.status !== 'accepted' && (
-                <button
-                  type="button"
+                <IconButton
                   title="Accept (A)"
-                  aria-label={`Accept box ${i + 1}`}
+                  label={`Accept box ${i + 1}`}
+                  tone="success"
                   onClick={() => onStatus(b.id, 'accepted')}
-                  className={cx(
-                    iconBtn,
-                    'border-green-300 text-green-700 hover:bg-green-50 dark:border-green-700 dark:text-green-300 dark:hover:bg-green-900/30',
-                  )}
-                >
-                  <Check className="size-5" aria-hidden="true" />
-                </button>
+                  icon={<Check className="size-5" aria-hidden="true" />}
+                />
               )}
               {editable && b.source === 'ai' && b.status !== 'rejected' && (
-                <button
-                  type="button"
+                <IconButton
                   title="Reject (R)"
-                  aria-label={`Reject box ${i + 1}`}
+                  label={`Reject box ${i + 1}`}
+                  tone="danger"
                   onClick={() => onStatus(b.id, 'rejected')}
-                  className={cx(
-                    iconBtn,
-                    'border-red-300 text-red-700 hover:bg-red-50 dark:border-red-700 dark:text-red-300 dark:hover:bg-red-900/30',
-                  )}
-                >
-                  <X className="size-5" aria-hidden="true" />
-                </button>
+                  icon={<X className="size-5" aria-hidden="true" />}
+                />
               )}
               {editable && b.source === 'ai' && b.status !== 'pending' && (
-                <button
-                  type="button"
+                <IconButton
                   title="Undo (U)"
-                  aria-label={`Undo decision on box ${i + 1}`}
+                  label={`Undo decision on box ${i + 1}`}
+                  tone="neutral"
                   onClick={() => onStatus(b.id, 'pending')}
-                  className={cx(
-                    iconBtn,
-                    'border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700',
-                  )}
-                >
-                  <RotateCcw className="size-4" aria-hidden="true" />
-                </button>
+                  icon={<RotateCcw className="size-4" aria-hidden="true" />}
+                />
               )}
               {editable && b.source === 'ranger' && (
-                <button
-                  type="button"
+                <IconButton
                   title="Delete (Del)"
-                  aria-label={`Delete box ${i + 1}`}
+                  label={`Delete box ${i + 1}`}
+                  tone="neutral"
                   onClick={() => onDelete(b.id)}
-                  className={cx(
-                    iconBtn,
-                    'border-gray-300 text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700',
-                  )}
-                >
-                  <Trash2 className="size-4" aria-hidden="true" />
-                </button>
+                  icon={<Trash2 className="size-4" aria-hidden="true" />}
+                />
               )}
             </div>
           </li>

@@ -15,7 +15,8 @@ import {
   Select,
   Textarea,
 } from '@shared/controls';
-import { seasonFromDate, todayIso } from '@shared/lib/format';
+import { todayIso } from '@shared/lib/dates';
+import { seasonFromDate } from '../../domain/seasons';
 import { CAMERA_OPTIONS } from '../../domain/cameras';
 import { useCreateSurvey } from './hooks';
 

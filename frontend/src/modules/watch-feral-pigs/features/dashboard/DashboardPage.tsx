@@ -15,7 +15,8 @@ import {
   TableFooter,
 } from '@shared/controls';
 import { SurveyTable, TimeWindowChart } from '../../components';
-import { percent, todayIso } from '@shared/lib/format';
+import { percent } from '@shared/lib/format';
+import { todayIso } from '@shared/lib/dates';
 import { useDebouncedValue } from '@shared/lib/useDebouncedValue';
 import { usePlannerWindows } from '../../api/queries/planner';
 import { useSurveyStats, useSurveys } from '../../api/queries/surveys';
