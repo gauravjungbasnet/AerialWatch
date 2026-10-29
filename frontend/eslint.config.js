@@ -7,6 +7,16 @@ import tseslint from 'typescript-eslint';
 /** A no-restricted-imports pattern that blocks each path and everything below it. */
 const forbid = (message, ...paths) => ({ group: paths.flatMap((p) => [p, `${p}/**`]), message });
 
+const modulePatterns = [
+  forbid('Modules must not import from app/ (docs/17 §5).', '@app', '**/app'),
+  forbid(
+    'Modules must not import other modules; move shared code to shared/ (docs/17 §5).',
+    '@modules',
+    '**/modules',
+    '**/watch-*',
+  ),
+];
+
 export default tseslint.config(
   { ignores: ['dist'] },
   {
@@ -48,18 +58,23 @@ export default tseslint.config(
   },
   {
     files: ['src/modules/**/*.{ts,tsx}'],
+    rules: { 'no-restricted-imports': ['error', { patterns: modulePatterns }] },
+  },
+  // A feature never imports another feature (docs/18 §6). Code two features need lives at module level:
+  // api/queries, api/keys, components/ or domain/. ESLint replaces rule options per block, so repeat the module rules.
+  {
+    files: ['src/modules/*/features/**/*.{ts,tsx}'],
     rules: {
       'no-restricted-imports': [
         'error',
         {
           patterns: [
-            forbid('Modules must not import from app/ (docs/17 §5).', '@app', '**/app'),
-            forbid(
-              'Modules must not import other modules; move shared code to shared/ (docs/17 §5).',
-              '@modules',
-              '**/modules',
-              '**/watch-*',
-            ),
+            ...modulePatterns,
+            {
+              regex: '^\\.\\./[^./][^/]*/',
+              message:
+                'A feature must not import another feature; move the shared part to api/queries, api/keys, components/ or domain/ (docs/18 §6).',
+            },
           ],
         },
       ],

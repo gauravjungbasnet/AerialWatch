@@ -20,7 +20,7 @@ import {
 import { TrainingExportPanel, TrainingTotals, trainingSplitLabel } from '@shared/components/training';
 import type { CameraType } from '../../api/types';
 import { wfpPath } from '../../paths';
-import { SurveyStatusBadge } from '../surveys/SurveyStatusBadge';
+import { SurveyStatusBadge } from '../../components';
 import { useExportTrainingData, useTrainingOverview } from './hooks';
 
 const splitTone = { train: 'info', validation: 'warning', test: 'success' } as const;

@@ -1,4 +1,4 @@
-import type { SurveyStatus } from '../../api/types';
+import type { SurveyStatus } from '../api/types';
 import { Badge, type Tone } from '@shared/controls';
 
 const MAP: Record<SurveyStatus, { label: string; tone: Tone }> = {

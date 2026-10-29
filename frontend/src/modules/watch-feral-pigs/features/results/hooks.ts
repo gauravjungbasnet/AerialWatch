@@ -1,11 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { wfpApi } from '../../api/client';
-
-export const resultsKeys = {
-  survey: (surveyId: string) => ['wfp', 'results', surveyId] as const,
-  photo: (surveyId: string, imageId: string) => ['wfp', 'results', surveyId, 'photo', imageId] as const,
-  photoTwin: (surveyId: string, imageId: string) => ['wfp', 'results', surveyId, 'photoTwin', imageId] as const,
-};
+import { resultsKeys } from '../../api/keys';
 
 /** Results for one survey. Refetched every time the page opens, so review changes show straight away. */
 export function useSurveyResults(surveyId: string) {

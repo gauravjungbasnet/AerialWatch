@@ -17,9 +17,10 @@ import {
 import { emptyFilters, hasActiveFilters } from '@shared/lib/filters';
 import type { SortState } from '@shared/lib/sorting';
 import { useDebouncedValue } from '@shared/lib/useDebouncedValue';
-import { SurveyStatusBadge } from './SurveyStatusBadge';
-import { windowLabel } from './labels';
-import { useDeleteSurvey, useSurveys } from './hooks';
+import { SurveyStatusBadge } from '../../components';
+import { windowLabel } from '../../domain/timeWindows';
+import { useSurveys } from '../../api/queries/surveys';
+import { useDeleteSurvey } from './hooks';
 
 // Server-side list: filters, sort and page go to GET /api/wfp/surveys/list and SQL Server does the work.
 

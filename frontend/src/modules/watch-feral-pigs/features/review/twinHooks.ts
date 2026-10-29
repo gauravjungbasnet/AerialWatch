@@ -1,14 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { wfpApi } from '../../api/client';
 import type { BoxRect, Detection, SetTwinMarkRequest, TwinMark, TwinSighting } from '../../api/types';
-import { reviewKeys } from './hooks';
-
-export const twinKeys = {
-  photo: (surveyId: string, imageId: string, confirmed: string) =>
-    ['wfp', 'review', surveyId, 'twin', imageId, confirmed] as const,
-  photoAll: (surveyId: string, imageId: string) => ['wfp', 'review', surveyId, 'twin', imageId] as const,
-  summary: (surveyId: string) => ['wfp', 'twinSummary', surveyId] as const,
-};
+import { reviewKeys, twinKeys } from '../../api/keys';
 
 /** Viewer id of a twin sighting's box, shared by both photos so selecting it on one highlights it on the other. */
 export const sightingBoxId = (markId: string) => `sighting:${markId}`;
@@ -37,7 +30,7 @@ export function useTwinCheck(
     .join('|');
   const confirmedIds = new Set(boxes.filter((b) => b.status === 'accepted').map((b) => b.id));
   return useQuery({
-    queryKey: [...twinKeys.photo(surveyId, imageId ?? '', confirmed), boxesUpdatedAt],
+    queryKey: twinKeys.photo(surveyId, imageId ?? '', confirmed, boxesUpdatedAt),
     queryFn: () => wfpApi.twinCheck(imageId!),
     enabled: Boolean(imageId) && enabled,
     placeholderData: keepPreviousData,
@@ -102,14 +95,6 @@ export function useTwinMarkActions(surveyId: string, imageId: string | undefined
       if (r) confirmSighting.mutate({ markId: s.markId, box: r });
     },
   };
-}
-
-export function useTwinCheckSummary(surveyId: string) {
-  return useQuery({
-    queryKey: twinKeys.summary(surveyId),
-    queryFn: () => wfpApi.twinCheckSummary(surveyId),
-    enabled: Boolean(surveyId),
-  });
 }
 
 /** Sightings still suggested on the counted photo, as dashed boxes for its viewer (D-041). */

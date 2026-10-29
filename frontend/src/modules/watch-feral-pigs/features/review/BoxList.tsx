@@ -1,7 +1,7 @@
 import { Check, RotateCcw, Trash2, X } from 'lucide-react';
 import type { Detection } from '../../api/types';
 import { cx, percent } from '@shared/lib/format';
-import { boxStyle } from './boxStyles';
+import { boxStyle } from '../../domain/boxAppearance';
 
 interface BoxListProps {
   boxes: Detection[];

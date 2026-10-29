@@ -101,6 +101,14 @@ Use Ctrl+C in each server terminal to stop the development servers.
 ## Run
 
 ### 1. Backend: http://localhost:5080 (Swagger at /swagger)
+**Backend startup project:** `AerialWatch.Api` (`src/backend/AerialWatch.Api/AerialWatch.Api.csproj`).
+**Application entry point:** `src/backend/AerialWatch.Api/Program.cs`.
+
+In Visual Studio Solution Explorer, right-click **AerialWatch.Api** → **Set as Startup Project**, select
+**AerialWebAPI**, then start debugging (F5) or run without debugging (Ctrl+F5).
+If an old `AerialWatch.Startup` folder is present, it is not the startup project for the current solution.
+The frontend runs separately with Vite as described below.
+
 **Visual Studio:** open `src/backend/AerialWatch.sln`, set **AerialWatch.Api** as the startup project, then choose a profile:
 - **AerialWebAPI**: uses the local SQL Server default instance (`Server=.`), database `AerialWatch`. SQL Server is required; there is no in-memory mode.
 - **The API does not create or migrate the database.** Create/upgrade it yourself with the EF commands below before

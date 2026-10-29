@@ -1,33 +1,12 @@
-import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { wfpApi } from '../../api/client';
-import type { CreateSurveyRequest, SurveyListQuery } from '../../api/types';
+import { surveyKeys } from '../../api/keys';
+import type { CreateSurveyRequest } from '../../api/types';
 
-export const surveyKeys = {
-  all: ['wfp', 'surveys'] as const,
-  lists: ['wfp', 'surveys', 'list'] as const,
-  list: (query: SurveyListQuery) => ['wfp', 'surveys', 'list', query] as const,
-  stats: ['wfp', 'surveys', 'stats'] as const,
-  detail: (id: string) => ['wfp', 'surveys', id] as const,
-  images: (id: string) => ['wfp', 'surveys', id, 'images'] as const,
-};
+// Kept here for features/surveys/photos (moves in docs/18 step 6); other features import from api/queries/surveys.
+export { surveyKeys } from '../../api/keys';
+export { useSurvey, useSurveys, useSurveyStats } from '../../api/queries/surveys';
 const keys = surveyKeys;
-
-/** One page from the server. Keeps showing the previous page while the next one loads (no flicker). */
-export function useSurveys(query: SurveyListQuery) {
-  return useQuery({
-    queryKey: keys.list(query),
-    queryFn: () => wfpApi.listSurveys(query),
-    placeholderData: keepPreviousData,
-  });
-}
-
-export function useSurveyStats() {
-  return useQuery({ queryKey: keys.stats, queryFn: wfpApi.surveyStats });
-}
-
-export function useSurvey(id: string) {
-  return useQuery({ queryKey: keys.detail(id), queryFn: () => wfpApi.getSurvey(id), enabled: Boolean(id) });
-}
 
 export function useCreateSurvey() {
   const qc = useQueryClient();

@@ -3,7 +3,7 @@ import { Card, ErrorAlert, Spinner } from '@shared/controls';
 import { TrainingSplitPicker } from '@shared/components/training';
 import type { SurveyDetail } from '../../api/types';
 import { wfpPath } from '../../paths';
-import { useSetTrainingSplit } from '../training/hooks';
+import { useSetTrainingSplit } from '../../api/queries/training';
 
 /** Survey page: put this flight in the Train / Validation / Test set for AI training, or leave it out (D-038). */
 export function TrainingSplitCard({ survey }: { survey: SurveyDetail }) {

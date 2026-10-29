@@ -5,7 +5,7 @@ import {
   type ImageViewerHandle,
   type ViewerMode,
 } from '@shared/imaging/viewer/ImageViewer';
-import { boxCaption, boxStyle, MIN_BOX_PX } from './boxStyles';
+import { boxCaption, boxStyle, MIN_BOX_PX } from '../../domain/boxAppearance';
 
 export type { ImageViewerHandle, ViewerMode } from '@shared/imaging/viewer/ImageViewer';
 

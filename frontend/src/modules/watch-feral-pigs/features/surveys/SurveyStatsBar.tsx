@@ -1,6 +1,6 @@
 import type { SurveyDetail } from '../../api/types';
 import { cx, percent } from '@shared/lib/format';
-import { windowLabel } from './labels';
+import { windowLabel } from '../../domain/timeWindows';
 
 /** Four tiles: date, time window, camera and the study's chance a pig is visible for these conditions. */
 export function SurveyStatsBar({ survey: s }: { survey: SurveyDetail }) {

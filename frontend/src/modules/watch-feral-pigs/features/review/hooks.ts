@@ -3,14 +3,7 @@ import { useRef } from 'react';
 import { DrawingHistory } from './drawingHistory';
 import { wfpApi } from '../../api/client';
 import type { BoxRect, Detection, ReviewImageDetail, ReviewImageFilter, UpdateDetectionRequest } from '../../api/types';
-import { surveyKeys } from '../surveys/hooks';
-
-export const reviewKeys = {
-  all: (surveyId: string) => ['wfp', 'review', surveyId] as const,
-  summary: (surveyId: string) => ['wfp', 'review', surveyId, 'summary'] as const,
-  images: (surveyId: string, filter: ReviewImageFilter) => ['wfp', 'review', surveyId, 'images', filter] as const,
-  image: (surveyId: string, imageId: string) => ['wfp', 'review', surveyId, 'image', imageId] as const,
-};
+import { reviewKeys, surveyKeys } from '../../api/keys';
 
 export function useReviewSummary(surveyId: string) {
   return useQuery({
@@ -44,7 +37,7 @@ function useRefreshReview(surveyId: string) {
   return () =>
     Promise.all([
       qc.invalidateQueries({ queryKey: reviewKeys.summary(surveyId) }),
-      qc.invalidateQueries({ queryKey: [...reviewKeys.all(surveyId), 'images'] }),
+      qc.invalidateQueries({ queryKey: reviewKeys.queues(surveyId) }),
       qc.invalidateQueries({ queryKey: surveyKeys.detail(surveyId), exact: true }),
       qc.invalidateQueries({ queryKey: surveyKeys.lists }),
       qc.invalidateQueries({ queryKey: surveyKeys.stats }),
@@ -71,8 +64,7 @@ export function useBulkAccept(surveyId: string) {
   const refresh = useRefreshReview(surveyId);
   return useMutation({
     mutationFn: (minConfidence: number) => wfpApi.bulkAccept(surveyId, minConfidence),
-    onSuccess: () =>
-      Promise.all([refresh(), qc.invalidateQueries({ queryKey: [...reviewKeys.all(surveyId), 'image'] })]),
+    onSuccess: () => Promise.all([refresh(), qc.invalidateQueries({ queryKey: reviewKeys.photos(surveyId) })]),
   });
 }
 

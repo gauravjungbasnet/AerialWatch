@@ -1,7 +1,8 @@
 import type { Season } from '../../api/types';
 import type { SelectOption } from '@shared/controls';
 
-export type SeasonChoice = 'auto' | Season;
+import type { SeasonChoice } from '../../domain/seasons';
+export type { SeasonChoice };
 
 export { CAMERA_OPTIONS } from '../../domain/cameras';
 

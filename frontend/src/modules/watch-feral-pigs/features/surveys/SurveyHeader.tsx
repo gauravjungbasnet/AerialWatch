@@ -4,7 +4,7 @@ import { BarChart3, CalendarDays, ChevronLeft, Clock, Images, Info, MapPin, Scan
 import type { SurveyDetail } from '../../api/types';
 import { Button, ButtonLink, ErrorAlert, Modal } from '@shared/controls';
 import { wfpPath } from '../../paths';
-import { SurveyStatusBadge } from './SurveyStatusBadge';
+import { SurveyStatusBadge } from '../../components';
 import { useDeleteSurvey } from './hooks';
 import { AssumptionsPanel } from '../../components';
 

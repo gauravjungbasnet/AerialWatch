@@ -4,7 +4,7 @@ import { Card, ErrorAlert, SkeletonRows } from '@shared/controls';
 import { percent } from '@shared/lib/format';
 import { AssumptionsPanel, CitationBlock, TimeWindowChart } from '../../components';
 import type { SeasonChoice } from './constants';
-import { usePlannerWindows } from './hooks';
+import { usePlannerWindows } from '../../api/queries/planner';
 
 /** Chance a pig is visible in each study window, and the recommended flight time (best vs worst window). */
 export function WindowsCard({

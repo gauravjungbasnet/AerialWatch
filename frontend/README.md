@@ -13,8 +13,9 @@ Start at `src/main.tsx`, then `src/app/App.tsx`. The app shell selects a module 
 | `src/app/registry.ts` | Launcher entries and the currently implemented app |
 | `src/modules/watch-feral-pigs/` | WFP module definition, routes and navigation |
 | `src/modules/watch-feral-pigs/features/` | Dashboard, planner, surveys, admin and about views, hooks and helpers |
-| `src/modules/watch-feral-pigs/components/` | WFP research and estimate components shared across WFP features |
-| `src/modules/watch-feral-pigs/api/` | WFP endpoints, backend DTO mirrors and query keys |
+| `src/modules/watch-feral-pigs/components/` | WFP components used by more than one feature (status badge, survey table, research blocks) |
+| `src/modules/watch-feral-pigs/domain/` | WFP rules and labels with no React or API: cameras, seasons, time windows, box appearance |
+| `src/modules/watch-feral-pigs/api/` | `contracts/` (DTO mirrors per feature), `endpoints/` (calls per feature), `keys.ts` (every query key), `queries/` (server-state hooks used by more than one feature); `types.ts` and `client.ts` re-export them |
 
 Shared code never imports an app module. Modules use shared controls and their own API hooks. The platform shell reads a module definition rather than owning feature routes or sidebar links. Browser URLs are module-scoped: / redirects to /wfp; WFP features are under /wfp.
 
@@ -66,4 +67,11 @@ Review keeps persistence, history, twin matching and labels in WFP adapters/hook
 - The ESLint boundary rules check both spellings: `shared/` may not import `@app`/`@modules` or `../app`/`../modules`; a module may not import `@app` or any `@modules/...` (a module never imports another module).
 - Prettier formats the code (`.prettierrc.json`: 120 characters, single quotes, semicolons, trailing commas). `npm run format` rewrites files, `npm run format:check` only checks. Markdown is not formatted.
 - Removed unused code: `shared/controls/Banner.tsx`, `modules/watch-feral-pigs/components/EstimateEquation.tsx`, and the unused `Annotation`/`AnnotationTone`/`AnnotationEditorEvents` types (the viewer's record is `ViewerAnnotation`).
+
+## Feature boundaries and server state (30 Oct 2026, docs/18 step 2)
+
+- A feature never imports another feature; ESLint rejects `../<other-feature>/...`. Code two features need goes to module level: `api/queries/` (hooks), `api/keys.ts` (keys), `components/` (UI), `domain/` (rules and labels).
+- Every WFP query key is defined in `api/keys.ts` and starts with `'wfp'`. `tests/query-keys.test.mjs` fails if a key is written by hand anywhere else, and checks the refresh prefixes the review relies on.
+- `api/types.ts` and `api/client.ts` are barrels over `api/contracts/<feature>.ts` and `api/endpoints/<feature>.ts`, so existing imports keep working; new code can import the feature file directly.
+- `features/surveys/hooks.ts` still re-exports `useSurvey`, `useSurveys`, `useSurveyStats` and `surveyKeys` for `features/surveys/photos/` until that folder is moved (docs/18 step 6).
 

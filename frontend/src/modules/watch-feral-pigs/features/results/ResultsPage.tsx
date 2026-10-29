@@ -17,7 +17,7 @@ import {
 import { AssumptionsPanel, CitationBlock } from '../../components';
 import { percent } from '@shared/lib/format';
 import { wfpPath } from '../../paths';
-import { useSurvey } from '../surveys/hooks';
+import { useSurvey } from '../../api/queries/surveys';
 import { AiVsRangerCard } from './AiVsRangerCard';
 import { TwinCheckSummary } from './TwinCheckSummary';
 import { PhotoMap } from './PhotoMap';

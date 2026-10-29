@@ -1,4 +1,4 @@
-import type { Detection } from '../../api/types';
+import type { Detection } from '../api/types';
 import { percent } from '@shared/lib/format';
 
 /** Smallest box side in original pixels; same rule as the API (ReviewRules.MinBoxSizePx). */

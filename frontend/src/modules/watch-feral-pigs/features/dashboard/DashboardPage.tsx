@@ -14,12 +14,11 @@ import {
   TableContainer,
   TableFooter,
 } from '@shared/controls';
-import { TimeWindowChart } from '../../components';
+import { SurveyTable, TimeWindowChart } from '../../components';
 import { percent, todayIso } from '@shared/lib/format';
 import { useDebouncedValue } from '@shared/lib/useDebouncedValue';
-import { usePlannerWindows } from '../planner/hooks';
-import { useSurveyStats, useSurveys } from '../surveys/hooks';
-import { SurveyTable } from '../surveys/SurveyTable';
+import { usePlannerWindows } from '../../api/queries/planner';
+import { useSurveyStats, useSurveys } from '../../api/queries/surveys';
 
 /** Dashboard content only; navigation and the app header remain shell-owned. */
 export function DashboardPage() {

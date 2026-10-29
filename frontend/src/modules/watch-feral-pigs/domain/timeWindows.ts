@@ -1,4 +1,4 @@
-import type { TimeWindow } from '../../api/types';
+import type { TimeWindow } from '../api/types';
 
 const WINDOW_LABEL: Record<TimeWindow, string> = {
   earlyMorning: 'Early morning',

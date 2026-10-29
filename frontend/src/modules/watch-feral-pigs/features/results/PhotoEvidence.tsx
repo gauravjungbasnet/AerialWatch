@@ -6,7 +6,7 @@ import { Alert, Badge, Button, ButtonLink, Modal, ErrorAlert, SkeletonRows } fro
 import { ntTime, percent } from '@shared/lib/format';
 import { cameraName } from '../../domain/cameras';
 import { wfpPath } from '../../paths';
-import { boxStyle } from '../review/boxStyles';
+import { boxStyle } from '../../domain/boxAppearance';
 import { usePhotoEvidence } from './hooks';
 import { ImageComparison } from '@shared/imaging/comparison/ImageComparison';
 import { AnnotatedImage, type ImageAnnotation } from '@shared/imaging/viewer/AnnotatedImage';

@@ -5,7 +5,7 @@ import { SurveyStatsBar } from './SurveyStatsBar';
 import { TrainingSplitCard } from './TrainingSplitCard';
 import { PhotoPairsCard } from './PhotoPairsCard';
 import { cameraName } from '../../domain/cameras';
-import { useSurvey } from './hooks';
+import { useSurvey } from '../../api/queries/surveys';
 import { PhotoGrid } from './photos/PhotoGrid';
 import { PhotoUploader } from './photos/PhotoUploader';
 

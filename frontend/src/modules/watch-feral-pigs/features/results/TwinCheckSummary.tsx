@@ -1,4 +1,4 @@
-import { useTwinCheckSummary } from '../review/twinHooks';
+import { useTwinCheckSummary } from '../../api/queries/twinCheck';
 import { cameraName } from '../../domain/cameras';
 
 const pct = (n: number, d: number) => (d > 0 ? `${Math.round((n / d) * 100)}%` : '–');

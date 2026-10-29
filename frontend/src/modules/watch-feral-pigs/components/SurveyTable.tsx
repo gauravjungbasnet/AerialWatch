@@ -1,7 +1,7 @@
-import { wfpPath } from '../../paths';
+import { wfpPath } from '../paths';
 import { Link } from 'react-router-dom';
-import type { SurveySummary } from '../../api/types';
-import { windowLabel } from './labels';
+import type { SurveySummary } from '../api/types';
+import { windowLabel } from '../domain/timeWindows';
 import { Table, TableBody, TableCell, TableHeadCell, TableHeader, TableRow } from '@shared/controls';
 import { SurveyStatusBadge } from './SurveyStatusBadge';
 import type { ReactNode } from 'react';
