@@ -1,43 +1,37 @@
 import { forwardRef } from 'react';
-import type { BoxRect, Detection } from '../../api/types';
+import type { Annotation, Rect } from '@shared/imaging/annotations/types';
 import {
   ImageViewer as SharedImageViewer,
   type ImageViewerHandle,
   type ViewerMode,
 } from '@shared/imaging/viewer/ImageViewer';
-import { boxCaption, boxStyle, MIN_BOX_PX } from '../../domain/boxAppearance';
+import { MIN_BOX_PX } from '../../domain/boxAppearance';
 
 export type { ImageViewerHandle, ViewerMode } from '@shared/imaging/viewer/ImageViewer';
 
 interface ImageViewerProps {
   src: string;
   alt: string;
-  boxes: Detection[];
+  /** Built by `adapters/annotations.ts`. */
+  annotations: Annotation[];
   selectedId: string | null;
   onSelect(id: string | null): void;
   mode: ViewerMode;
   /** False once the review is complete: boxes can be selected but not drawn, moved or resized. */
   editable: boolean;
-  onCreate(rect: BoxRect): void;
-  onChangeBox(id: string, rect: BoxRect): void;
-  /** Optional label above each box; default "n · AI 87%" (the twin check passes its own, D-040). */
-  caption?(box: Detection, index: number): string;
+  onCreate(rect: Rect): void;
+  onChangeBox(id: string, rect: Rect): void;
 }
 
-/** WFP adapter only: shared viewer owns all rendering, gestures and rectangle editing. */
+/** Review preset of the shared viewer: zoom, pan and selection always; drawing and editing only while editable. */
 export const ImageViewer = forwardRef<ImageViewerHandle, ImageViewerProps>(function ImageViewer(
-  { boxes, caption, editable, ...props },
+  { editable, ...props },
   ref,
 ) {
   return (
     <SharedImageViewer
       ref={ref}
       {...props}
-      annotations={boxes.map((box, index) => ({
-        ...box,
-        label: caption ? caption(box, index) : `${index + 1} · ${boxCaption(box)}`,
-        appearance: boxStyle(box),
-      }))}
       options={{
         zoom: true,
         pan: true,

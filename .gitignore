@@ -15,3 +15,11 @@ datasets/
 runs/
 # Never commit shared or licensed imagery
 data/
+
+# Added 30 Oct 2026 (cleanup)
+*.zip
+*.onnx
+.pytest_cache/
+.env
+.env.*
+*.local.json

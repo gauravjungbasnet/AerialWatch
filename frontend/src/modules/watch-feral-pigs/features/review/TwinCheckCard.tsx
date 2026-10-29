@@ -4,7 +4,7 @@ import type { CameraType, TwinCheck, TwinImage, TwinMark, TwinSighting } from '.
 import { Card } from '@shared/controls';
 import { cx } from '@shared/lib/format';
 import { cameraName } from '../../domain/cameras';
-import { sightingBoxId } from './twinHooks';
+import { sightingId } from '../../adapters/annotations';
 
 interface Props {
   twin: TwinImage;
@@ -112,7 +112,7 @@ export function TwinCheckCard({
           {sightings.map((s) => (
             <Row
               key={s.markId}
-              id={sightingBoxId(s.markId)}
+              id={sightingId(s.markId)}
               selectedId={selectedId}
               onSelect={onSelect}
               title={`${s.label} · seen on ${twinName}`}

@@ -1,0 +1,18 @@
+# Store text files with LF line endings in git, so Prettier (which writes LF) and Windows checkouts agree.
+* text=auto eol=lf
+
+# Windows-only files keep CRLF
+*.sln text eol=crlf
+*.ps1 text eol=crlf
+*.bat text eol=crlf
+*.cmd text eol=crlf
+
+# Binary files: never touch
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.zip binary
+*.ipynb text eol=lf

@@ -39,9 +39,28 @@ Close and reopen PowerShell after installing tools so PATH is refreshed.
 
 ### 1. Get the complete source
 
-Clone the repository URL provided by the owner, or extract the source archive into a local folder.
-Do not guess the Git remote URL. Example workspace: `C:\Projects\CodingCompetition`.
-The commands below assume this structure exists:
+Source repository: [gauravjungbasnet/AerialWatch](https://github.com/gauravjungbasnet/AerialWatch).
+This Git repository contains the **contents of `src`** (`backend`, `frontend`, `ml`, and this README), not the outer CodingCompetition workspace.
+For the paths in this guide, clone it into a folder named `src`:
+
+```powershell
+# Choose a writable workspace path on YOUR PC:
+New-Item -ItemType Directory -Force -Path 'C:\Projects\CodingCompetition' | Out-Null
+Set-Location 'C:\Projects\CodingCompetition'
+git clone https://github.com/gauravjungbasnet/AerialWatch.git src
+```
+
+Run the clone command only when `src` does not already exist. If your friend supplied the complete workspace ZIP,
+extract it and use its existing `src`; do not clone over it or create `src/src`. GitHub may require your own account's
+repository access. Never embed access tokens/passwords in the URL.
+
+The root `README.md`, `AGENTS.md` and `docs/` belong to the **outer workspace** and must be supplied separately by the owner
+(or included in the workspace ZIP); cloning the source repository alone does not provide those outer files.
+If already cloned as `C:\Projects\AerialWatch`, that folder itself is the source root: its `backend` and `frontend`
+are equivalent to the `src/backend` and `src/frontend` paths in these instructions. Adjust working directories accordingly.
+Do not assume there is another `src` folder inside the clone.
+
+The complete workspace should contain:
 
 - `AGENTS.md` and `docs/` at the workspace root.
 - `src/backend/AerialWatch.sln` and the projects it references.
@@ -282,6 +301,38 @@ and never put it in source control, cloud assistants or screenshots. Start fresh
 - Report actual versions, non-sensitive instance/database names, migration status, health result, frontend checks and test summaries.
   Never print credential-bearing connection strings. If blocked, report the failing command and useful error text; do not claim a pass.
 
+
+## Packaging a workspace ZIP for a teammate
+
+Share the outer `README.md`, `AGENTS.md`, `docs/` and source files. Alternatively supply the outer docs with the source
+clone URL above. Preserve `.csproj`, `backend/AerialWatch.sln`, `frontend/package.json`, `frontend/package-lock.json`,
+configuration templates, Python requirement files, and **all checked-in EF migrations plus the model snapshot**.
+
+Exclude these workspace-relative paths if present:
+
+```text
+NACAS-DATA/
+data/
+comms/
+evidence/                         # local screenshots, private evidence and backup archives
+src/.git/                         # history is unnecessary in a source ZIP; clone for fresh Git metadata
+src/frontend/node_modules/
+src/frontend/dist/
+src/frontend/dist-ssr/
+src/ml/.venv/
+src/ml/models/                    # model weights are optional; transfer separately only if permitted
+src/ml/runs/
+```
+
+Also exclude `bin/` and `obj/` inside **every** backend project, including tests and any old project folders.
+Exclude `.vs/`, `.idea/`, `__pycache__/`, `.pytest_cache/`, `TestResults/`, `datasets/`, and `.venv/` wherever present,
+plus local secrets (`.env`, `.env.*`, `*.local.json`), user settings (`*.user`, `*.suo`), logs, `.pt`/`.onnx` weights
+and nested old `.zip` archives. Check any other local configuration for secrets before sharing.
+Keep the checked-in `appsettings.json` and `appsettings.Development.json` after verifying they contain no private credentials.
+**Do not exclude `.sln` files** just because a tool's ignore patterns happen to match them.
+
+These exclusions are for the distribution archive, not instructions to delete the developer's working files.
+Dependencies/build folders are recreated locally. A fresh database has no existing surveys; migration/data-transfer instructions above explain the difference.
 
 ## Status
 | Slice | Status |

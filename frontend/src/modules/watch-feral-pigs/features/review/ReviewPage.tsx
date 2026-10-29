@@ -18,8 +18,13 @@ import { followResize } from '@shared/imaging/annotations/geometry';
 import { cameraName } from '../../domain/cameras';
 import { TwinPane } from './TwinPane';
 import { TwinCheckCard } from './TwinCheckCard';
-import { markIdOfSightingBox, sightingSuggestions, useTwinCheck, useTwinMarkActions } from './twinHooks';
-import { boxCaption } from '../../domain/boxAppearance';
+import { useTwinCheck, useTwinMarkActions } from './twinHooks';
+import {
+  countedBoxAnnotations,
+  markIdOfSighting,
+  sightingId,
+  sightingSuggestionAnnotations,
+} from '../../adapters/annotations';
 import type { Detection, ReviewImageFilter, TwinMark } from '../../api/types';
 import { wfpApi } from '../../api/client';
 import { Alert, Button, ButtonLink, Card, ErrorAlert, Kbd, SkeletonRows } from '@shared/controls';
@@ -93,13 +98,11 @@ export function ReviewPage() {
   );
   const twinActions = useTwinMarkActions(surveyId, photoId);
   // Pigs drawn on the twin first are suggested on this photo as dashed boxes (D-041); they aren't counted until confirmed.
-  const suggestedFromTwin = useMemo(() => sightingSuggestions(twinCheck.data?.sightings), [twinCheck.data]);
-  const viewerBoxes = useMemo(
-    () => (suggestedFromTwin.length ? [...boxes, ...suggestedFromTwin] : boxes),
-    [boxes, suggestedFromTwin],
+  const twinName = twin ? cameraName(twin.camera).toLowerCase() : 'twin';
+  const viewerAnnotations = useMemo(
+    () => [...countedBoxAnnotations(boxes), ...sightingSuggestionAnnotations(twinCheck.data?.sightings, twinName)],
+    [boxes, twinCheck.data, twinName],
   );
-  const sightingLabel = (boxId: string) =>
-    twinCheck.data?.sightings.find((s) => s.markId === markIdOfSightingBox(boxId))?.label ?? '';
   /** A box on this photo moved or resized; a resize also resizes its placed box on the twin (D-041). */
   const changeCountedBox = (id: string, rect: { x: number; y: number; width: number; height: number }) => {
     const before = boxes.find((b) => b.id === id);
@@ -134,7 +137,7 @@ export function ReviewPage() {
     else
       twinActions.addSighting.mutate(rect, {
         onSuccess: (s) => {
-          setSelectedId(`sighting:${s.markId}`);
+          setSelectedId(sightingId(s.markId));
           setMode('select');
         },
       });
@@ -468,7 +471,7 @@ export function ReviewPage() {
                               ref={viewer}
                               src={wfpApi.surveyImageUrl(photoId)}
                               alt={photo?.fileName ?? 'Survey photo'}
-                              boxes={viewerBoxes}
+                              annotations={viewerAnnotations}
                               selectedId={selectedId}
                               onSelect={setSelectedId}
                               mode={mode}
@@ -483,16 +486,11 @@ export function ReviewPage() {
                               onChangeBox={(id, rect) => {
                                 // Moving a suggestion from the twin confirms it here (it becomes a counted pig, D-041).
                                 const sighting = twinCheck.data?.sightings.find(
-                                  (s) => s.markId === markIdOfSightingBox(id),
+                                  (s) => s.markId === markIdOfSighting(id),
                                 );
                                 if (sighting) twinActions.confirmOnCounted(sighting, rect);
                                 else changeCountedBox(id, rect);
                               }}
-                              caption={(b, i) =>
-                                markIdOfSightingBox(b.id)
-                                  ? `${sightingLabel(b.id)} · from ${twin ? cameraName(twin.camera).toLowerCase() : 'twin'}`
-                                  : `${i + 1} · ${boxCaption(b)}`
-                              }
                             />
                           </ViewerPanel>
                         ) : !photoId ? (

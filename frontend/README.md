@@ -14,6 +14,7 @@ Start at `src/main.tsx`, then `src/app/App.tsx`. The app shell selects a module 
 | `src/modules/watch-feral-pigs/` | WFP module definition, routes and navigation |
 | `src/modules/watch-feral-pigs/features/` | Dashboard, planner, surveys, admin and about views, hooks and helpers |
 | `src/modules/watch-feral-pigs/components/` | WFP components used by more than one feature (status badge, survey table, research blocks) |
+| `src/modules/watch-feral-pigs/adapters/` | WFP records → shared capability models: `annotations.ts` turns pig boxes, twin marks and sightings into viewer `Annotation`s |
 | `src/modules/watch-feral-pigs/domain/` | WFP rules and labels with no React or API: cameras, seasons, time windows, box appearance |
 | `src/modules/watch-feral-pigs/api/` | `contracts/` (DTO mirrors per feature), `endpoints/` (calls per feature), `keys.ts` (every query key), `queries/` (server-state hooks used by more than one feature); `types.ts` and `client.ts` re-export them |
 
@@ -74,4 +75,11 @@ Review keeps persistence, history, twin matching and labels in WFP adapters/hook
 - Every WFP query key is defined in `api/keys.ts` and starts with `'wfp'`. `tests/query-keys.test.mjs` fails if a key is written by hand anywhere else, and checks the refresh prefixes the review relies on.
 - `api/types.ts` and `api/client.ts` are barrels over `api/contracts/<feature>.ts` and `api/endpoints/<feature>.ts`, so existing imports keep working; new code can import the feature file directly.
 - `features/surveys/hooks.ts` still re-exports `useSurvey`, `useSurveys`, `useSurveyStats` and `surveyKeys` for `features/surveys/photos/` until that folder is moved (docs/18 step 6).
+
+## One box model (30 Oct 2026, docs/18 step 3)
+
+- Shared viewers (`ImageViewer`, `AnnotatedImage`) draw one record: `Annotation` in `shared/imaging/annotations/types.ts` (rect in original pixels, `id`, `label`, `appearance`, optional `can`).
+- WFP builds them in `adapters/annotations.ts` only: `countedBoxAnnotations`, `sightingSuggestionAnnotations`, `twinPaneAnnotations` (review) and `confirmedBoxAnnotations`, `twinEvidenceAnnotations` (results). Twin sighting ids (`sighting:<markId>`) are made and read there (`sightingId`, `markIdOfSighting`).
+- `features/review/ImageViewer.tsx` is the review preset (zoom, pan, selection; editing only while the review is open). `ImageComparison` takes typed pane ids.
+- `tests/wfp-annotations.test.mjs` checks numbering, labels, styles, ids and which marks appear on each photo.
 

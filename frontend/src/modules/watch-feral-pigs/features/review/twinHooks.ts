@@ -3,11 +3,6 @@ import { wfpApi } from '../../api/client';
 import type { BoxRect, Detection, SetTwinMarkRequest, TwinMark, TwinSighting } from '../../api/types';
 import { reviewKeys, twinKeys } from '../../api/keys';
 
-/** Viewer id of a twin sighting's box, shared by both photos so selecting it on one highlights it on the other. */
-export const sightingBoxId = (markId: string) => `sighting:${markId}`;
-export const markIdOfSightingBox = (boxId: string) =>
-  boxId.startsWith('sighting:') ? boxId.slice('sighting:'.length) : null;
-
 const rectOf = (x?: number, y?: number, width?: number, height?: number): BoxRect | undefined =>
   x != null && y != null && width != null && height != null ? { x, y, width, height } : undefined;
 
@@ -95,26 +90,4 @@ export function useTwinMarkActions(surveyId: string, imageId: string | undefined
       if (r) confirmSighting.mutate({ markId: s.markId, box: r });
     },
   };
-}
-
-/** Sightings still suggested on the counted photo, as dashed boxes for its viewer (D-041). */
-export function sightingSuggestions(sightings: TwinSighting[] | undefined): Detection[] {
-  return (sightings ?? [])
-    .filter(
-      (s) => s.state === 'suggestedOnCounted' && s.x != null && s.y != null && s.width != null && s.height != null,
-    )
-    .map(
-      (s) =>
-        ({
-          id: sightingBoxId(s.markId),
-          imageId: '',
-          x: s.x!,
-          y: s.y!,
-          width: s.width!,
-          height: s.height!,
-          label: 'pig',
-          source: 'ai',
-          status: 'pending',
-        }) as Detection,
-    );
 }

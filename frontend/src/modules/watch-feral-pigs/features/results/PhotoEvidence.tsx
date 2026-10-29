@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { ExternalLink, Info } from 'lucide-react';
 import { wfpApi } from '../../api/client';
-import type { CameraType, Detection, ReviewImageDetail, TwinCheck } from '../../api/types';
+import type { CameraType, ReviewImageDetail, TwinCheck } from '../../api/types';
 import { Alert, Badge, Button, ButtonLink, Modal, ErrorAlert, SkeletonRows } from '@shared/controls';
 import { ntTime, percent } from '@shared/lib/format';
 import { cameraName } from '../../domain/cameras';
@@ -9,60 +9,8 @@ import { wfpPath } from '../../paths';
 import { boxStyle } from '../../domain/boxAppearance';
 import { usePhotoEvidence } from './hooks';
 import { ImageComparison } from '@shared/imaging/comparison/ImageComparison';
-import { AnnotatedImage, type ImageAnnotation } from '@shared/imaging/viewer/AnnotatedImage';
-
-const twinColour = 'var(--color-violet-400)';
-
-function countedMarks(boxes: Detection[]): ImageAnnotation[] {
-  // Same numbers as the review tool: position in the photo's full box list.
-  return boxes.flatMap((b, i) =>
-    b.status !== 'accepted'
-      ? []
-      : [
-          {
-            key: b.id,
-            x: b.x,
-            y: b.y,
-            width: b.width,
-            height: b.height,
-            color: boxStyle(b).color,
-            label: String(i + 1),
-          },
-        ],
-  );
-}
-
-function twinMarks(check: TwinCheck | undefined): ImageAnnotation[] {
-  if (!check) return [];
-  const placed = check.marks.flatMap((m) =>
-    m.state === 'confirmed' && m.x != null && m.y != null && m.width != null && m.height != null
-      ? [
-          {
-            key: m.detectionId,
-            x: m.x,
-            y: m.y,
-            width: m.width,
-            height: m.height,
-            label: String(m.number),
-            color: twinColour,
-          },
-        ]
-      : [],
-  );
-  const onlyHere = check.sightings
-    .filter((s) => s.state === 'notVisibleOnCounted')
-    .map((s) => ({
-      key: s.markId,
-      x: s.twinX,
-      y: s.twinY,
-      width: s.twinWidth,
-      height: s.twinHeight,
-      label: s.label,
-      color: 'var(--color-amber-400)',
-      dashed: true,
-    }));
-  return [...placed, ...onlyHere];
-}
+import { AnnotatedImage } from '@shared/imaging/viewer/AnnotatedImage';
+import { confirmedBoxAnnotations, twinEvidenceAnnotations } from '../../adapters/annotations';
 
 type View = 'both' | 'counted' | 'twin';
 
@@ -178,7 +126,7 @@ function Evidence({
                 caption={`${cameraName(countedCamera)} · counted · ${image.fileName}`}
                 widthPx={image.widthPx}
                 heightPx={image.heightPx}
-                marks={countedMarks(detections)}
+                annotations={confirmedBoxAnnotations(detections)}
               />
             ),
           },
@@ -194,7 +142,7 @@ function Evidence({
                       caption={`${cameraName(twin.camera)} · reference, not counted · ${twin.fileName}`}
                       widthPx={twin.widthPx}
                       heightPx={twin.heightPx}
-                      marks={twinMarks(check)}
+                      annotations={twinEvidenceAnnotations(check)}
                     />
                   ),
                 },

@@ -8,7 +8,7 @@ import {
   useState,
   type PointerEvent as ReactPointerEvent,
 } from 'react';
-import type { Rect } from '../annotations/types';
+import type { Annotation, Rect } from '../annotations/types';
 import { resolveViewerOptions, type ViewerOptions } from './options';
 import { cx } from '../../lib/format';
 import { drawGestureRequested } from './gestures';
@@ -21,17 +21,13 @@ export interface ImageViewerHandle {
   zoomBy(factor: number): void;
 }
 
-export interface ViewerAnnotation extends Rect {
-  id: string;
-  label: string;
-  appearance: { color: string; fill?: string; dash?: number[]; opacity?: number };
-  can?: { move?: boolean; resize?: boolean };
-}
+/** Kept for existing callers; the record is `Annotation` in `../annotations/types`. */
+export type ViewerAnnotation = Annotation;
 
 export interface ImageViewerProps {
   src: string;
   alt: string;
-  annotations: ViewerAnnotation[];
+  annotations: Annotation[];
   selectedId?: string | null;
   onSelect?(id: string | null): void;
   mode?: ViewerMode;

@@ -2,22 +2,31 @@ import type { ReactNode } from 'react';
 import { SegmentedControl } from '../../controls/SegmentedControl';
 import { cx } from '../../lib/format';
 
-export interface ComparisonPane {
-  id: string;
+export interface ComparisonPane<Id extends string = string> {
+  id: Id;
   label: string;
   content: ReactNode;
 }
-interface ImageComparisonProps {
+/** Which panes are shown: one pane by id, or `both` side by side. */
+export type ComparisonView<Id extends string = string> = Id | 'both';
+interface ImageComparisonProps<Id extends string> {
   name: string;
-  panes: ComparisonPane[];
-  view: string;
-  onView(view: string): void;
+  panes: ComparisonPane<Id>[];
+  view: ComparisonView<Id>;
+  onView(view: ComparisonView<Id>): void;
   layout?: 'workspace' | 'gallery';
   actions?: ReactNode;
 }
 
 /** Neutral camera-independent comparison: callers supply panes, labels and per-pane viewer configuration. */
-export function ImageComparison({ name, panes, view, onView, layout = 'gallery', actions }: ImageComparisonProps) {
+export function ImageComparison<Id extends string>({
+  name,
+  panes,
+  view,
+  onView,
+  layout = 'gallery',
+  actions,
+}: ImageComparisonProps<Id>) {
   const visible = view === 'both' || !panes.some((p) => p.id === view) ? panes : panes.filter((p) => p.id === view);
   const paired = visible.length > 1;
   return (
@@ -25,7 +34,7 @@ export function ImageComparison({ name, panes, view, onView, layout = 'gallery',
       {(panes.length > 1 || actions) && (
         <div className="flex flex-wrap items-end justify-between gap-3 border-b border-gray-200 p-3 dark:border-gray-700">
           {panes.length > 1 && (
-            <SegmentedControl
+            <SegmentedControl<ComparisonView<Id>>
               name={name}
               legend="Image comparison"
               variant="tabs"
