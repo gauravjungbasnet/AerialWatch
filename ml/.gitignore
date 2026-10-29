@@ -1,0 +1,6 @@
+models/*.pt
+models/*.onnx
+runs/
+__pycache__/
+.pytest_cache/
+*.egg-info/

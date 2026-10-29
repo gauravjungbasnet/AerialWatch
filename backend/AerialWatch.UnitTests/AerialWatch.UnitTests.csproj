@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Fast tests, no database: research model, services (with repository test doubles), migrations vs model,
+       and architecture rules (which project may reference which). -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AerialWatch.Domain\AerialWatch.Domain.csproj" />
+    <ProjectReference Include="..\AerialWatch.Contracts\AerialWatch.Contracts.csproj" />
+    <ProjectReference Include="..\AerialWatch.Application\AerialWatch.Application.csproj" />
+    <!-- Infrastructure: migration checks. Api: ArchitectureTests read its assembly. -->
+    <ProjectReference Include="..\AerialWatch.Infrastructure\AerialWatch.Infrastructure.csproj" />
+    <ProjectReference Include="..\AerialWatch.Api\AerialWatch.Api.csproj" />
+  </ItemGroup>
+
+</Project>

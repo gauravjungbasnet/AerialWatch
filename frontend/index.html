@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Plan drone surveys and estimate feral pig numbers using CDU research (Hvala et al. 2023)."
+    />
+    <title>Aerial Watch</title>
+    <script>
+      // Apply saved/system theme before first paint (avoids a light flash in dark mode).
+      try {
+        var t = localStorage.getItem('aerialwatch.theme');
+        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches))
+          document.documentElement.classList.add('dark');
+      } catch (e) {}
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

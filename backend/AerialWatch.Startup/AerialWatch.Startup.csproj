@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Composition root for the backend: the only project that knows every implementation. The API calls
+       AddAerialWatch() and otherwise sees only AerialWatch.Contracts. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AerialWatch.Application\AerialWatch.Application.csproj" />
+    <ProjectReference Include="..\AerialWatch.Persistence\AerialWatch.Persistence.csproj" />
+    <ProjectReference Include="..\AerialWatch.Infrastructure\AerialWatch.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

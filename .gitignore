@@ -1,0 +1,17 @@
+# .NET
+bin/
+obj/
+*.user
+.vs/
+TestResults/
+# Node
+node_modules/
+dist/
+# Python / ML
+__pycache__/
+.venv/
+*.pt
+datasets/
+runs/
+# Never commit shared or licensed imagery
+data/

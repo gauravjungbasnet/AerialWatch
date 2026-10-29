@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Contracts: what the API is allowed to see. Service interfaces, request/response DTOs and the exceptions the API
+       maps to HTTP status codes. One type per file, grouped by feature. No implementations, no EF Core, no ASP.NET.
+       The frontend's modules/watch-feral-pigs/api/types.ts mirrors these DTOs. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- DTOs use domain enums and value records (CameraType, Season, Assumption, PlannerResult). -->
+    <ProjectReference Include="..\AerialWatch.Domain\AerialWatch.Domain.csproj" />
+  </ItemGroup>
+
+</Project>

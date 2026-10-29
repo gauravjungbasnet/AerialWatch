@@ -1,0 +1,5 @@
+dist
+node_modules
+package-lock.json
+# Docs keep their hand-written tables and line breaks
+*.md

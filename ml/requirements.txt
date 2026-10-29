@@ -1,0 +1,7 @@
+# Detection service (CPU). Training extras: requirements-train.txt
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+python-multipart==0.0.20
+pillow==11.0.0
+numpy>=1.26,<3
+opencv-python-headless==4.10.0.84

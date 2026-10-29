@@ -1,0 +1,58 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AerialWatch.Domain", "AerialWatch.Domain\AerialWatch.Domain.csproj", "{4896930A-D0CF-496A-BEB8-803E485FA18D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AerialWatch.Api", "AerialWatch.Api\AerialWatch.Api.csproj", "{505629FA-0743-425D-86C5-D1E0F4690C59}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AerialWatch.UnitTests", "AerialWatch.UnitTests\AerialWatch.UnitTests.csproj", "{093194C2-0FE1-471A-B0D1-65FB16DD3329}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AerialWatch.Application", "AerialWatch.Application\AerialWatch.Application.csproj", "{C10487F2-3FD4-41DA-87FD-C5587064313C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AerialWatch.Infrastructure", "AerialWatch.Infrastructure\AerialWatch.Infrastructure.csproj", "{5B02597E-FB8D-4CFF-80DE-77DFB6BC9274}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AerialWatch.IntegrationTests", "AerialWatch.IntegrationTests\AerialWatch.IntegrationTests.csproj", "{6D3A2E10-4C2B-4E8A-9A51-2B7F0C1D9E02}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AerialWatch.Contracts", "AerialWatch.Contracts\AerialWatch.Contracts.csproj", "{F86B2A58-FE9E-4787-B000-E9ABEE33AE24}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4896930A-D0CF-496A-BEB8-803E485FA18D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4896930A-D0CF-496A-BEB8-803E485FA18D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4896930A-D0CF-496A-BEB8-803E485FA18D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4896930A-D0CF-496A-BEB8-803E485FA18D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{505629FA-0743-425D-86C5-D1E0F4690C59}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{505629FA-0743-425D-86C5-D1E0F4690C59}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{505629FA-0743-425D-86C5-D1E0F4690C59}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{505629FA-0743-425D-86C5-D1E0F4690C59}.Release|Any CPU.Build.0 = Release|Any CPU
+		{093194C2-0FE1-471A-B0D1-65FB16DD3329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{093194C2-0FE1-471A-B0D1-65FB16DD3329}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{093194C2-0FE1-471A-B0D1-65FB16DD3329}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{093194C2-0FE1-471A-B0D1-65FB16DD3329}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C10487F2-3FD4-41DA-87FD-C5587064313C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C10487F2-3FD4-41DA-87FD-C5587064313C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C10487F2-3FD4-41DA-87FD-C5587064313C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C10487F2-3FD4-41DA-87FD-C5587064313C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B02597E-FB8D-4CFF-80DE-77DFB6BC9274}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B02597E-FB8D-4CFF-80DE-77DFB6BC9274}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B02597E-FB8D-4CFF-80DE-77DFB6BC9274}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B02597E-FB8D-4CFF-80DE-77DFB6BC9274}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6D3A2E10-4C2B-4E8A-9A51-2B7F0C1D9E02}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6D3A2E10-4C2B-4E8A-9A51-2B7F0C1D9E02}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6D3A2E10-4C2B-4E8A-9A51-2B7F0C1D9E02}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6D3A2E10-4C2B-4E8A-9A51-2B7F0C1D9E02}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F86B2A58-FE9E-4787-B000-E9ABEE33AE24}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F86B2A58-FE9E-4787-B000-E9ABEE33AE24}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F86B2A58-FE9E-4787-B000-E9ABEE33AE24}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F86B2A58-FE9E-4787-B000-E9ABEE33AE24}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

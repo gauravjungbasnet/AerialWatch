@@ -1,0 +1,31 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- Infrastructure layer: everything that talks to the outside world, behind interfaces defined in Application.
+       Persistence/ = Microsoft SQL Server via EF Core (DbContext, table configurations, migrations, repositories).
+       Storage/ = uploaded files on disk (D-030). Imaging/ = EXIF + thumbnails. Time/ = system clock.
+       Next: HTTP client for the Python AI service. -->
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <!-- Lets dotnet ef read the API's appsettings.json (Persistence/DesignTimeDbContextFactory). -->
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+    <!-- Photos (D-030): EXIF time/GPS (Apache-2.0) and decoding + thumbnails (MIT). -->
+    <PackageReference Include="MetadataExtractor" Version="2.8.1" />
+    <PackageReference Include="SkiaSharp" Version="2.88.8" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AerialWatch.Application\AerialWatch.Application.csproj" />
+  </ItemGroup>
+
+</Project>

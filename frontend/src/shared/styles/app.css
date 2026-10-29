@@ -1,0 +1,96 @@
+/*
+ * Design system: recreation of the Windmill Dashboard look (windmillui.com, MIT) in Tailwind CSS v4.
+ * The original @windmill/react-ui package targets Tailwind 1–2 and is unmaintained (last release 2021),
+ * so we reproduce its styling with our own components instead of installing it.
+ */
+@import 'tailwindcss';
+
+/* Dark mode is toggled by a .dark class on <html> (Windmill behaviour). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  --font-sans: 'Segoe UI', ui-sans-serif, system-ui, -apple-system, sans-serif;
+
+  /* Brand = Windmill purple. To rebrand, change these ten values only. */
+  --color-brand-50: #f6f5ff;
+  --color-brand-100: #edebfe;
+  --color-brand-200: #dcd7fe;
+  --color-brand-300: #cabffd;
+  --color-brand-400: #ac94fa;
+  --color-brand-500: #9061f9;
+  --color-brand-600: #7e3af2;
+  --color-brand-700: #6c2bd9;
+  --color-brand-800: #5521b5;
+  --color-brand-900: #4a1d96;
+
+  /* Windmill grays (slightly cool) */
+  --color-gray-50: #f9fafb;
+  --color-gray-100: #f4f5f7;
+  --color-gray-200: #e5e7eb;
+  --color-gray-300: #d5d6d7;
+  --color-gray-400: #9e9e9e;
+  --color-gray-500: #707275;
+  --color-gray-600: #4c4f52;
+  --color-gray-700: #24262d;
+  --color-gray-800: #1a1c23;
+  --color-gray-900: #121317;
+}
+
+/* Windmill's hairline card shadow and purple focus ring */
+@utility shadow-card {
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.05);
+}
+
+@utility ring-focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgb(202 191 253 / 0.45);
+}
+
+@layer base {
+  /* Tailwind v4 defaults borders to currentColor; Windmill uses light gray hairlines. */
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200);
+  }
+
+  .dark *,
+  .dark ::after,
+  .dark ::before {
+    border-color: var(--color-gray-700);
+  }
+
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+
+  /* The app shell owns scrolling; the document must not add a second scrollbar. */
+  html,
+  body {
+    overflow: hidden;
+  }
+
+  #root {
+    overflow: auto;
+  }
+
+  body {
+    @apply bg-gray-50 text-gray-700 antialiased dark:bg-gray-900 dark:text-gray-300;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand-400);
+    outline-offset: 2px;
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+  }
+}

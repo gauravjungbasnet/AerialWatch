@@ -1,0 +1,125 @@
+/* Map-first workspace only when both the width and height can accommodate the panels. */
+.results-workspace {
+  display: grid;
+  gap: 1rem;
+  padding: 1rem;
+  min-height: 100%;
+  align-content: start;
+}
+.results-map {
+  height: 26rem;
+}
+.results-workspace:not(.results-workspace--map) .results-map {
+  height: auto;
+}
+@media (min-width: 1024px) {
+  .results-workspace {
+    grid-template-columns: 20rem minmax(0, 1fr);
+  }
+  .results-summary {
+    grid-column: 1;
+    grid-row: 1;
+  }
+  .results-map {
+    grid-column: 2;
+    grid-row: 1;
+    height: 100%;
+    min-height: 26rem;
+  }
+  .results-photos {
+    grid-column: 1 / -1;
+  }
+}
+@media (min-width: 1280px) and (min-height: 800px) {
+  .results-workspace--map {
+    position: relative;
+    isolation: isolate;
+    grid-template-columns: 21rem minmax(0, 1fr);
+    align-items: start;
+    align-content: stretch;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    height: 100%;
+    min-height: 46rem;
+  }
+  .results-workspace--map .results-map {
+    grid-area: auto;
+    position: absolute;
+    inset: 0;
+    height: 100%;
+    z-index: 0;
+  }
+  .results-workspace--map .map-legend {
+    top: 1rem;
+    right: 5rem;
+    bottom: auto;
+    left: auto;
+  }
+}
+.results-map .leaflet-control-zoom a {
+  width: 44px;
+  height: 44px;
+  line-height: 44px;
+}
+.results-map .leaflet-control-layers-toggle {
+  width: 44px;
+  height: 44px;
+}
+.results-photos nav {
+  flex-wrap: wrap;
+}
+.results-photos nav button {
+  width: 44px;
+  height: 44px;
+}
+.results-photos th button {
+  min-height: 44px;
+}
+@media (max-width: 639px) {
+  .results-photos nav button:first-child,
+  .results-photos nav button:last-child {
+    display: none;
+  }
+}
+/* Photo evidence is requested on demand, without blocking map interaction. */
+.results-photo-trigger {
+  justify-self: end;
+}
+.results-sheet {
+  position: fixed;
+  inset: auto 0 0;
+  width: 100%;
+  max-width: 64rem;
+  margin-inline: auto;
+  z-index: 45;
+}
+@media (min-width: 1024px) {
+  .results-photo-trigger {
+    grid-column: 2;
+  }
+}
+@media (min-width: 1280px) and (min-height: 800px) {
+  .results-workspace--map .results-photo-trigger {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: end;
+    margin-bottom: 1rem;
+  }
+  .results-workspace--map .results-sheet {
+    inset: auto 1.5rem 0 auto;
+    width: calc(100% - 40rem);
+    margin: 0;
+  }
+}
+.results-map path[role='button']:focus-visible {
+  outline: none;
+  stroke-width: 5px;
+  stroke: var(--color-brand-600);
+}
+/* Selected evidence needs room for two image panes; the photo list stays compact. */
+@media (min-width: 1280px) and (min-height: 800px) {
+  .results-workspace--map .results-sheet--image {
+    width: min(64rem, calc(100% - 3rem));
+    max-width: 64rem;
+  }
+}
